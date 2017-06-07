@@ -1,0 +1,31 @@
+database:
+  host: localhost
+  user: root
+  pass: 
+  name: ocrend
+  port: 1521
+  protocol: TCP
+  motor: mysql
+
+router:
+  root: /Framework/
+  url: http://localhost/Framework/
+  
+phpmailer:
+  host: 
+  user:
+  pass:
+  port: 465
+
+paypal:
+  mode: sandbox
+  client_id: 
+  client_secret:
+
+framework:
+  firewall: true
+  debug: false
+  version: 2.0.0
+
+site:
+  name: Ocrend Framework 2
