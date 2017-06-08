@@ -44,13 +44,13 @@ abstract class Controllers {
     protected $method;
 
      /**
-      * Tiene el valor de la ruta /método
+      * Inicia la configuración inicial de cualquier controlador
       *
       * @param RouterInterface $router: Instancia de un Router
       * @param bool $twig_reload: true activa la recarga de caché estricto de twig
       *                           false desactiva la recarga de caché estricto de twig    
     */
-    public function __construct(RouterInterface $router, bool $twig_reload = true) {
+    protected function __construct(RouterInterface $router, bool $twig_reload = true) {
         global $config, $http, $session;
 
         # Twig Engine http://gitnacho.github.io/Twig/

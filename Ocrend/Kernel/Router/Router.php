@@ -1,10 +1,26 @@
 <?php
 
+/*
+ * This file is part of the Ocrend Framewok 2 package.
+ *
+ * (c) Ocrend Software <info@ocrend.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Ocrend\Kernel\Router;
 
 use Ocrend\Kernel\Router\RouterException;
 use Ocrend\Kernel\Router\RouterInterface;
 use Ocrend\Kernel\Helpers\Arrays;
+
+/**
+ * Encargado de controlar las URL Amigables en cada controlador del sistema, es independiente al Routing de Silex.
+ * Define por defecto 3 rutas escenciales, controlador, método e id.
+ *
+ * @author Brayan Narváez <prinick@ocrend.com>
+ */
 
 final class Router implements RouterInterface {
 
@@ -22,6 +38,8 @@ final class Router implements RouterInterface {
     ];
 
     /**
+      * Colección de rutas existentes
+      *
       * @var array 
     */
     private $routerCollection = array(
@@ -31,6 +49,8 @@ final class Router implements RouterInterface {
     );
 
     /**
+      * Colección de reglas para cada ruta existente
+      *
       * @var array 
     */
     private $routerCollectionRules = array(
@@ -50,7 +70,7 @@ final class Router implements RouterInterface {
     private $requestUri;
 
     /**
-        * __construct() 
+      * __construct() 
     */
     public function __construct() {
         global $http;
@@ -62,7 +82,12 @@ final class Router implements RouterInterface {
         $this->checkRequests();
     }   
 
-    // poner regla a la ruta
+    /**
+      * Coloca una regla destinada a una ruta, siempre y cuando esta regla exista.
+      *
+      * @param string $index : Índice de la ruta
+      * @param string $rule : Nombre de la regla
+    */
     final private function setCollectionRule(string $index, string $rule) {
         try {
             # Verificar si la regla existe
@@ -76,7 +101,9 @@ final class Router implements RouterInterface {
         } 
     }
 
-    // veriricar las peticiones
+    /**
+      * Verifica las peticiones por defecto
+    */
     final private function checkRequests() {
         # Verificar si existe peticiones
         if(null !== $this->requestUri) {
@@ -89,7 +116,12 @@ final class Router implements RouterInterface {
         $this->routerCollection['/id'] = array_key_exists(2,$this->real_request) ? $this->real_request[2] : null;
     }
 
-    // poner ruta
+    /**
+      * Crea una nueva ruta.
+      *
+      * @param string $index : Índice de la ruta
+      * @param string $rule : Nombre de la regla, por defecto es ninguna "none"
+    */
     final public function setRoute(string $index, string $rule = 'none') {
         try {
             # Nombres de rutas no permitidos
@@ -112,7 +144,13 @@ final class Router implements RouterInterface {
         }  
     }
     
-    // obtener valor de ruta
+    /**
+      * Obtiene el valor de una ruta según la regla que ha sido definida y si ésta existe.
+      *
+      * @param string $index : Índice de la ruta
+      *
+      * @return mixed : Valor de la ruta solicitada
+    */
     final public function getRoute(string $index) {
         try {
             # Verificar existencia de ruta
@@ -180,20 +218,24 @@ final class Router implements RouterInterface {
         * @param bool $with_rules : true para obtener el id con reglas definidas para números mayores a 0
         *                           false para obtener el id sin reglas definidas
         * 
-        * @return string con el id
+        * @return int|null con el id
         *           int con el id si usa reglas.
         *           null si no está definido.
     */
     final public function getId(bool $with_rules = false) {
         $id = $this->routerCollection['/id'];
         if($with_rules) {
-            return (null !== $id && is_numeric($id) && $id > 0) ? $id : null;
+            return (null !== $id && is_numeric($id) && $id > 0) ? (int) $id : null;
         }
 
         return $id;
     }
 
-    # Ejecuta al controlador
+   /**
+      * Ejecuta el controlador solicitado por la URL.
+      * Si este no existe, ejecutará errorController.
+      * Si no se solicita ningún controlador, ejecutará homeController.
+    */
     final public function executeController() {
         try {
             # Definir controlador

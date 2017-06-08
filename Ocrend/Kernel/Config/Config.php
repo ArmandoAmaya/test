@@ -27,7 +27,7 @@ final class Config {
       *
       * @var string   
     */
-    const FILE_CONFIG_ROUTE = API_INTERFACE . 'Ocrend/Kernel/Config/config.yml';
+    const FILE_CONFIG_ROUTE = API_INTERFACE . 'Ocrend/Kernel/Config/ocrend.ini.yml';
 
     /**
       * Lee la configuración del archivo self::FILE_CONFIG_ROUTE 
