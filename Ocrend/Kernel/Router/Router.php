@@ -4,6 +4,7 @@ namespace Ocrend\Kernel\Router;
 
 use Ocrend\Kernel\Router\RouterException;
 use Ocrend\Kernel\Router\RouterInterface;
+use Ocrend\Kernel\Helpers\Arrays;
 
 final class Router implements RouterInterface {
 
@@ -14,8 +15,10 @@ final class Router implements RouterInterface {
         'none', # Sin ninguna regla
         'letters', # Sólamente letras
         'alphanumeric', # Letras y números
-        'numeric', # Sólamente números
-        'numeric_positive' # Solamente números positivos
+        'integer', # Sólamente números enteros
+        'integer_positive', # Solamente números enteros positivos
+        'float', # Sólamente números enteros
+        'float_positive' # Solamente números enteros positivos
     ];
 
     /**
@@ -37,27 +40,30 @@ final class Router implements RouterInterface {
     );
 
     /**
+      * @var array
+    */
+    private $real_request = array();
+
+    /**
       * @var string
     */
     private $requestUri;
 
     /**
-      * @var string
-    */
-    private $host;
-
-    /**
         * __construct() 
     */
     public function __construct() {
-        global $config;
+        global $http;
         
-        $this->requestUri = $_SERVER['REQUEST_URI'];
-        $this->host = strtolower(trim($config['router']['root']));
+        # Obtener las peticiones
+        $this->requestUri = $http->query->get('routing');
+
+        # Verificar las peticiones
+        $this->checkRequests();
     }   
 
     // poner regla a la ruta
-    final private function setCollectionRule(strning $index, string $rule) {
+    final private function setCollectionRule(string $index, string $rule) {
         try {
             # Verificar si la regla existe
             if(!in_array($rule,self::RULES)) {
@@ -68,6 +74,19 @@ final class Router implements RouterInterface {
         } catch(RouterException $e) {
             die($e->getMessage());
         } 
+    }
+
+    // veriricar las peticiones
+    final private function checkRequests() {
+        # Verificar si existe peticiones
+        if(null !== $this->requestUri) {
+            $this->real_request = explode('/',$this->requestUri);
+            $this->routerCollection['/controller'] = $this->real_request[0];
+        }
+
+        # Setear las siguientes rutas
+        $this->routerCollection['/method'] = array_key_exists(1,$this->real_request) ? $this->real_request[1] : null;
+        $this->routerCollection['/id'] = array_key_exists(2,$this->real_request) ? $this->real_request[2] : null;
     }
 
     // poner ruta
@@ -84,10 +103,10 @@ final class Router implements RouterInterface {
                 $this->routerCollectionRules[$index]
             );
             
-            # Definir las ruta y regla
-            $this->routerCollection[$index] = null;
+            # Definir la ruta y regla
+            $lastRoute = sizeof($this->routerCollection);
+            $this->routerCollection[$index] = array_key_exists($lastRoute,$this->real_request) ? $this->real_request[$lastRoute] : null;
             $this->setCollectionRule($index,$rule);
-            
         } catch(RouterException $e) {
             die($e->getMessage());
         }  
@@ -97,7 +116,7 @@ final class Router implements RouterInterface {
     final public function getRoute(string $index) {
         try {
             # Verificar existencia de ruta
-            if(!in_array($index,$this->routerCollection)) {
+            if(!array_key_exists($index,$this->routerCollection)) {
                 throw new RouterException('La ruta ' . $index . ' no está definida en el controlador.');
             }
 
@@ -115,11 +134,17 @@ final class Router implements RouterInterface {
                 case 'alphanumeric':
                     return preg_match('[[:alnum:]]', $ruta) ? $ruta : null;
                 break;
-                case 'numeric':
-                    return is_numeric($ruta) ? $ruta : null;
+                case 'integer':
+                    return is_numeric($ruta) ? (int) $ruta : null;
                 break;
-                case 'numeric_positive':
-                    return (is_numeric($ruta) && $ruta >= 0) ? $ruta : null;
+                case 'float':
+                    return is_numeric($ruta) ? (float) $ruta : null;
+                break;
+                case 'integer_positive':
+                    return (is_numeric($ruta) && $ruta >= 0) ? (int) $ruta : null;
+                break;
+                case 'float_positive':
+                    return (is_numeric($ruta) && $ruta >= 0) ? (float) $ruta : null;
                 break;
                 default:
                     throw new RouterException('La regla ' . $this->routerCollectionRules[$index] . ' existe en RULES pero no está implementada.');
@@ -170,20 +195,25 @@ final class Router implements RouterInterface {
 
     # Ejecuta al controlador
     final public function executeController() {
-        if(null != ($controller = $this->getController())) {
-            $controller = $controller . 'Controller';
+        try {
+            # Definir controlador
+            if(null != ($controller = $this->getController())) {
+                $controller = $controller . 'Controller';
 
-            if(!is_readable('app/controllers/' . $controller . '.php')) {
+                if(!is_readable('app/controllers/' . $controller . '.php')) {
+                    $controller = 'errorController';
+                }
+
+            } else {
                 $controller = 'errorController';
-            }
+            }  
 
-        } else {
-            $controller = 'errorController';
-        }  
+            $controller = 'app\\controllers\\' . $controller;    
 
-        $controller = 'app\\controllers\\' . $controller;     
-
-        new $controller($this);       
+            new $controller($this);  
+        } catch(RouterException $e) {
+            die('<b>Error de configuración:</b>' . $e->getMessage());
+        }       
     }
 
 }

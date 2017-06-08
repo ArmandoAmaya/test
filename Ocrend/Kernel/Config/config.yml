@@ -6,10 +6,6 @@ database:
   port: 1521
   protocol: TCP
   motor: mysql
-
-router:
-  root: /Framework/
-  url: http://localhost/Framework/
   
 phpmailer:
   host: 
@@ -29,3 +25,5 @@ framework:
 
 site:
   name: Ocrend Framework 2
+  author: Ocrend Software
+  url: http://localhost/Framework/
