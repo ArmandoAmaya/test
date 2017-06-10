@@ -11,7 +11,7 @@ class homeController extends Controllers implements ControllersInterface {
 
     public function __construct(RouterInterface $router) {
         parent::__construct($router);
-        new Model\Ejemplo($router);
+        echo $this->template->render('home/home');
     }
 
 }

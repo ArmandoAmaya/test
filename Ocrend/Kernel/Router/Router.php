@@ -13,7 +13,6 @@ namespace Ocrend\Kernel\Router;
 
 use Ocrend\Kernel\Router\RouterException;
 use Ocrend\Kernel\Router\RouterInterface;
-use Ocrend\Kernel\Helpers\Arrays;
 
 /**
  * Encargado de controlar las URL Amigables en cada controlador del sistema, es independiente al Routing de Silex.

@@ -12,6 +12,7 @@
 namespace Ocrend\Kernel\Controllers;
 
 use Ocrend\Kernel\Router\RouterInterface;
+use Ocrend\Kernel\Helpers\Functions;
 
 /**
  * Clase para conectar todos los controladores del sistema y compartir la configuración.
@@ -43,6 +44,13 @@ abstract class Controllers {
     */
     protected $method;
 
+    /**
+      * Contiene una instancia del helper para funciones
+      *
+      * @var Ocrend\Kernel\Helpers\Functions
+    */
+    protected $functions;
+
      /**
       * Inicia la configuración inicial de cualquier controlador
       *
@@ -62,10 +70,15 @@ abstract class Controllers {
             # en true, las plantillas generadas tienen un método __toString() para mostrar los nodos generados
             'debug' => $config['framework']['debug']
         )); 
+
+        # Instanciar las funciones
+        $this->functions = new Functions();
         
         # Request global
         $this->template->addGlobal('http', $http);
         $this->template->addGlobal('session', $session);
+        $this->template->addGlobal('config', $config);
+        $this->template->addExtension($this->functions);
 
         # Auxiliares
         $this->method = $router->getMethod();

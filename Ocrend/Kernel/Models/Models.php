@@ -13,6 +13,7 @@ namespace Ocrend\Kernel\Models;
 
 use Ocrend\Kernel\Router\RouterInterface;
 use Ocrend\Kernel\Database\Database;
+use Ocrend\Kernel\Helpers\Functions;
 
 /**
  * Clase para conectar todos los modelos del sistema y compartir la configuración.
@@ -48,6 +49,20 @@ abstract class Models  {
     private $databaseConfig = array();
 
     /**
+      * Contiene una instancia del helper para funciones
+      *
+      * @var Ocrend\Kernel\Helpers\Functions
+    */
+    protected $functions;
+
+    /**
+      * Contiene el id del usuario que tiene su sesión iniciada.
+      *
+      * @var int|null con id del usuario
+    */
+    protected $id_user = null;
+
+    /**
       * Inicia la configuración inicial de cualquier modelo
       *
       * @param RouterInterface $router: Instancia de un Router 
@@ -55,6 +70,8 @@ abstract class Models  {
       *                                    array('name' => string, 'motor' => string, 'new_instance' => bool)
     */
     protected function __construct(RouterInterface $router = null, $databaseConfig = null) {
+        global $session;
+
         # Llenar la configuración a la base de datos
         $this->setDatabaseConfig($databaseConfig);
 
@@ -62,6 +79,14 @@ abstract class Models  {
         if(null != $router) {
             $this->id = $router->getId(true);
             $this->id = null == $this->id ? 0 : $this->id; 
+        }
+
+        # Instanciar las funciones
+        $this->functions = new Functions();
+
+        # Verificar sesión del usuario
+        if(null != $session->get('user_id')) {
+           $this->id_user = $session->get('user_id');
         }
 
         # Instancia a la base de datos 
@@ -81,10 +106,12 @@ abstract class Models  {
     private function setDatabaseConfig($databaseConfig) {
         global $config;
 
+        # Parámetros por defecto
         $this->databaseConfig['name'] = $config['database']['name'];
         $this->databaseConfig['motor'] = $config['database']['motor'];
         $this->databaseConfig['new_instance'] = false;
 
+        # Añadir según lo pasado por $databaseConfig
         if(is_array($databaseConfig)) {
             if(array_key_exists('name',$databaseConfig)) {
                $this->databaseConfig['name'] =  $databaseConfig['name'];

@@ -10,6 +10,7 @@ class errorController extends Controllers implements ControllersInterface {
 
     public function __construct(RouterInterface $router) {
         parent::__construct($router);
+        echo $this->template->render('error/error');
     }
 
 }

@@ -342,6 +342,9 @@ class Twig_Environment
      */
     public function loadTemplate($name, $index = null)
     {
+        # Ocrend Framework
+        $name .= '.twig';
+        # Ocrend Framework
         $cls = $mainCls = $this->getTemplateClass($name);
         if (null !== $index) {
             $cls .= '_'.$index;

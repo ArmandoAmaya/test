@@ -12,6 +12,7 @@
 
 use Ocrend\Kernel\Config\Config;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -23,7 +24,12 @@ $config = (new Config)->readConfig();
 /**
   * Capa orientada a objetos para el uso de sesiones más seguras en PHP.
 */
-($session = new Session)->start();
+$session = new Session(new NativeSessionStorage(
+  array(
+    'cookie_lifetime' => $config['sessions']['life_time']
+  )
+));
+$session->start();
 
 /**
   * Capa orientada a objetos para reemplazar las peticiones Http $_GET, $_POST, $_FILES, $_COOKIES, $_SERVER

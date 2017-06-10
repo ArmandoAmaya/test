@@ -114,11 +114,11 @@ final class Arrays extends \Twig_Extension {
   */
   public function getFunctions() : array {
     return array(
-      new Twig_Function('get_key_by_index', array($this, 'get_key_by_index')),
-      new Twig_Function('unique_array', array($this, 'unique_array')),
-      new Twig_Function('is_assoc', array($this, 'is_assoc')),
-      new Twig_Function('is_numeric_array', array($this, 'is_numeric_array')),
-      new Twig_Function('array_random_element', array($this, 'array_random_element'))
+      new \Twig_Function('get_key_by_index', array($this, 'get_key_by_index')),
+      new \Twig_Function('unique_array', array($this, 'unique_array')),
+      new \Twig_Function('is_assoc', array($this, 'is_assoc')),
+      new \Twig_Function('is_numeric_array', array($this, 'is_numeric_array')),
+      new \Twig_Function('array_random_element', array($this, 'array_random_element'))
     );
   }
 

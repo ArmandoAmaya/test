@@ -7,22 +7,30 @@ database:
   port: 1521
   protocol: TCP
   motor: mysql
+  
 # Configuración de servidor SMTP
 phpmailer:
   host: 
   user:
   pass:
   port: 465
+
 # Credenciales de uso de SDK PayPal
 paypal:
   mode: sandbox
   client_id: 
   client_secret:
+
+# Configuración de sesiones
+sessions:
+  life_time: 3600 
+
 # Variables del framework
 framework:
   firewall: true
   debug: false
   version: 2.0.0
+
 # Configuración del sitio
 site:
   name: Ocrend Framework 2

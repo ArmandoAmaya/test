@@ -1,0 +1,28 @@
+body {
+    background: #181818;
+    color: #a4a4a4;
+}
+#main_app {
+    margin: -15% 0 0 -25%;
+    position: absolute;
+	top: 50%;
+	left: 50%;
+	min-height: 10%;
+	width: 50%;
+}
+
+.panel-ocrend {
+    background: #222222;
+    border: 1px solid #292929;
+    color: #b3b1ae;
+}
+a {
+    text-decoration: none!important;
+}
+ul {
+    list-style: none;
+    padding-left: 0px!important;
+}
+ul li {
+    line-height: 30px;
+}
