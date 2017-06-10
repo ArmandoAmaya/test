@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models as Model;
 use Ocrend\Kernel\Router\RouterInterface;
 use Ocrend\Kernel\Controllers\Controllers;
 use Ocrend\Kernel\Controllers\ControllersInterface;

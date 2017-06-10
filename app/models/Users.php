@@ -57,6 +57,40 @@ class Users extends Models implements ModelsInterface {
     /**
       * Genera la sesión con el id del usuario que ha iniciado
       *
+      * @param string $pass : Contraseña sin encriptar
+      * @param string $pass_repeat : Contraseña repetida sin encriptar
+      *
+      * @throws ModelsException cuando las contraseñas no coinciden
+    */
+    private function checkPassMatch(string $pass, string $pass_repeat) {
+        if($pass != $pass_repeat) {
+            throw new ModelsException('Las contraseñas no coinciden.');
+        }
+    }
+
+    /**
+      * Verifica el email introducido, tanto el formato como su existencia en el sistema
+      *
+      * @param string $email: Email del usuario
+      *
+      * @throws ModelsException en caso de que no tenga formato válido o ya exista
+    */
+    private function checkEmail(string $email) {
+        # Formato de email
+        if(!Strings::is_email($email)) {
+            throw new ModelsException('El email no tiene un formato válido.');
+        }
+        # Existencia de email
+        $email = $this->db->scape($email);
+        $query = $this->db->select('id_user','users',"email='$email'",'LIMIT 1');
+        if(false !== $query) {
+            throw new ModelsException('El email introducido ya existe.');
+        }
+    }
+
+    /**
+      * Genera la sesión con el id del usuario que ha iniciado
+      *
       * @param array $user_data: Arreglo con información de la base de datos, del usuario
       *
       * @return void
@@ -182,6 +216,50 @@ class Users extends Models implements ModelsInterface {
             
             throw new ModelsException('Credenciales incorrectas.');
 
+        } catch(ModelsException $e) {
+            return array('success' => 0, 'message' => $e->getMessage());
+        }        
+    }
+
+    /**
+      * Realiza la acción de registro dentro del sistema
+      *
+      * @return array : Con información de éxito/falla al registrar el usuario nuevo.
+    */
+    public function register() : array {
+        try {
+            global $http;
+
+            # Obtener los datos $_POST
+            $name = $http->request->get('name');
+            $email = $http->request->get('email');
+            $pass = $http->request->get('pass');
+            $pass_repeat = $http->request->get('pass_repeat');
+
+            # Verificar que no están vacíos
+            if($this->functions->e($name,$email,$pass,$pass_repeat)) {
+                throw new ModelsException('Todos los datos son necesarios');
+            }
+
+            # Verificar email 
+            $this->checkEmail($email);
+
+            # Veriricar contraseñas
+            $this->checkPassMatch($pass,$pass_repeat);
+
+            # Registrar al usuario
+            $this->db->insert('users',array(
+                'name' => $name,
+                'email' => $email,
+                'pass' => Strings::hash($pass)
+            ));
+
+            # Iniciar sesión
+            $this->generateSession(array(
+                'id_user' => $this->db->lastInsertId()
+            ));
+
+            return array('success' => 1, 'message' => 'Registrado con éxito.');
         } catch(ModelsException $e) {
             return array('success' => 0, 'message' => $e->getMessage());
         }        

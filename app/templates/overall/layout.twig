@@ -20,8 +20,16 @@
     {% block appBody %}
         <!-- BODY -->
     {% endblock %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+      {% if config.framework.debug %}
+        {# jQuery para ver errores de ajax vía consola, no eliminar #}
+        <script src="views/app/js/jdev.js"></script>
+      {% else %}
+        {# jQuery para su plantilla, este puede ser modificado a voluntad #}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+      {% endif %}
+
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     {% block appFooter %}
         <!-- FOOTER -->
     {% endblock %}
