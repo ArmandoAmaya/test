@@ -9,6 +9,7 @@ return array(
     'Twig\\' => array($vendorDir . '/twig/twig/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'Symfony\\Component\\VarDumper\\' => array($vendorDir . '/symfony/var-dumper'),
     'Symfony\\Component\\Routing\\' => array($vendorDir . '/symfony/routing'),
     'Symfony\\Component\\HttpKernel\\' => array($vendorDir . '/symfony/http-kernel'),
     'Symfony\\Component\\HttpFoundation\\' => array($vendorDir . '/symfony/http-foundation'),

@@ -35,3 +35,10 @@ $session->start();
   * Capa orientada a objetos para reemplazar las peticiones Http $_GET, $_POST, $_FILES, $_COOKIES, $_SERVER
 */
 $http = Request::createFromGlobals();
+
+/**
+  * Activa el debug
+*/
+if($config['framework']['debug']) {
+  Symfony\Component\Debug\Debug::enable();
+}
