@@ -101,6 +101,28 @@ class DebugClassLoader
 
             spl_autoload_register($function);
         }
+
+        # Ocrend framework alert message
+        if(defined('API_INTERFACE') && API_INTERFACE != '../') {
+            global $config;
+
+            echo '<div style="
+                margin: 5px auto;
+                display: block;
+                padding: 5px;
+                background-color: #18171B;
+                color: #FF8;
+                line-height: 1.2em;
+                font: 12px Menlo, Monaco, Consolas, monospace;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+                position: relative;
+                z-index: 99999;
+                word-break: break-all;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                width: 90%;">DEBUG ACTIVO : Se recomienda DESACTIVAR esta funcionalidad en producción ya que puede revelar información.</div>';
+        }
     }
 
     /**

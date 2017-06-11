@@ -11,7 +11,6 @@
 
 namespace Ocrend\Kernel\Router;
 
-use Ocrend\Kernel\Router\RouterException;
 use Ocrend\Kernel\Router\RouterInterface;
 
 /**
@@ -86,18 +85,16 @@ final class Router implements RouterInterface {
       *
       * @param string $index : Índice de la ruta
       * @param string $rule : Nombre de la regla
+      *
+      * @throws \RuntimeException si la regla no existe
     */
     final private function setCollectionRule(string $index, string $rule) {
-        try {
-            # Verificar si la regla existe
-            if(!in_array($rule,self::RULES)) {
-                throw new RouterException('La regla ' . $rule . ' no existe.');
-            }
-            # Definir la regla para la ruta
-            $this->routerCollectionRules[$index] = $rule;
-        } catch(RouterException $e) {
-            die($e->getMessage());
-        } 
+        # Verificar si la regla existe
+        if(!in_array($rule,self::RULES)) {
+            throw new \RuntimeException('La regla ' . $rule . ' no existe.');
+        }
+        # Definir la regla para la ruta
+        $this->routerCollectionRules[$index] = $rule;
     }
 
     /**
@@ -120,27 +117,25 @@ final class Router implements RouterInterface {
       *
       * @param string $index : Índice de la ruta
       * @param string $rule : Nombre de la regla, por defecto es ninguna "none"
+      *
+      * @throws \RuntimeException si no puede definirse la ruta
     */
     final public function setRoute(string $index, string $rule = 'none') {
-        try {
-            # Nombres de rutas no permitidos
-            if(in_array($index,['/controller','/method','/id'])) {
-                throw new RouterException('No puede definirse ' . $index . ' como índice en la ruta.');
-            }
+        # Nombres de rutas no permitidos
+        if(in_array($index,['/controller','/method','/id'])) {
+            throw new \RuntimeException('No puede definirse ' . $index . ' como índice en la ruta.');
+        }
 
-            # Sobreescribir
-            unset(
-                $this->routerCollection[$index],
-                $this->routerCollectionRules[$index]
-            );
+        # Sobreescribir
+        unset(
+            $this->routerCollection[$index],
+            $this->routerCollectionRules[$index]
+        );
             
-            # Definir la ruta y regla
-            $lastRoute = sizeof($this->routerCollection);
-            $this->routerCollection[$index] = array_key_exists($lastRoute,$this->real_request) ? $this->real_request[$lastRoute] : null;
-            $this->setCollectionRule($index,$rule);
-        } catch(RouterException $e) {
-            die($e->getMessage());
-        }  
+        # Definir la ruta y regla
+        $lastRoute = sizeof($this->routerCollection);
+        $this->routerCollection[$index] = array_key_exists($lastRoute,$this->real_request) ? $this->real_request[$lastRoute] : null;
+        $this->setCollectionRule($index,$rule);
     }
     
     /**
@@ -148,48 +143,45 @@ final class Router implements RouterInterface {
       *
       * @param string $index : Índice de la ruta
       *
+      * @throws \RuntimeException si la ruta no existe o si no está implementada la regla
       * @return mixed : Valor de la ruta solicitada
     */
     final public function getRoute(string $index) {
-        try {
-            # Verificar existencia de ruta
-            if(!array_key_exists($index,$this->routerCollection)) {
-                throw new RouterException('La ruta ' . $index . ' no está definida en el controlador.');
-            }
+          # Verificar existencia de ruta
+        if(!array_key_exists($index,$this->routerCollection)) {
+            throw new \RuntimeException('La ruta ' . $index . ' no está definida en el controlador.');
+        }
 
-            # Obtener la ruta nativa sin reglas
-            $ruta = $this->routerCollection[$index];
+        # Obtener la ruta nativa sin reglas
+        $ruta = $this->routerCollection[$index];
 
-            # Retornar ruta con la regla definida aplicada
-            switch($this->routerCollectionRules[$index]) {
-                case 'none':
-                    return $ruta;
-                break;
-                case 'letters':
-                    return preg_match('[[:alpha:]]', $ruta) ? $ruta : null;
-                break;
-                case 'alphanumeric':
-                    return preg_match('[[:alnum:]]', $ruta) ? $ruta : null;
-                break;
-                case 'integer':
-                    return is_numeric($ruta) ? (int) $ruta : null;
-                break;
-                case 'float':
-                    return is_numeric($ruta) ? (float) $ruta : null;
-                break;
-                case 'integer_positive':
-                    return (is_numeric($ruta) && $ruta >= 0) ? (int) $ruta : null;
-                break;
-                case 'float_positive':
-                    return (is_numeric($ruta) && $ruta >= 0) ? (float) $ruta : null;
-                break;
-                default:
-                    throw new RouterException('La regla ' . $this->routerCollectionRules[$index] . ' existe en RULES pero no está implementada.');
-                break;
-            }
-        } catch(RouterException $e) {
-            die($e->getMessage());
-        }  
+        # Retornar ruta con la regla definida aplicada
+        switch($this->routerCollectionRules[$index]) {
+            case 'none':
+                return $ruta;
+            break;
+            case 'letters':
+                return preg_match('[[:alpha:]]', $ruta) ? $ruta : null;
+            break;
+            case 'alphanumeric':
+                return preg_match('[[:alnum:]]', $ruta) ? $ruta : null;
+            break;
+            case 'integer':
+                return is_numeric($ruta) ? (int) $ruta : null;
+            break;
+            case 'float':
+                return is_numeric($ruta) ? (float) $ruta : null;
+            break;
+            case 'integer_positive':
+                return (is_numeric($ruta) && $ruta >= 0) ? (int) $ruta : null;
+            break;
+            case 'float_positive':
+                return (is_numeric($ruta) && $ruta >= 0) ? (float) $ruta : null;
+            break;
+            default:
+                throw new \RuntimeException('La regla ' . $this->routerCollectionRules[$index] . ' existe en RULES pero no está implementada.');
+            break;
+        }
     }
 
     /**
@@ -236,25 +228,21 @@ final class Router implements RouterInterface {
       * Si no se solicita ningún controlador, ejecutará homeController.
     */
     final public function executeController() {
-        try {
-            # Definir controlador
-            if(null != ($controller = $this->getController())) {
-                $controller = $controller . 'Controller';
+        # Definir controlador
+        if(null != ($controller = $this->getController())) {
+            $controller = $controller . 'Controller';
 
-                if(!is_readable('app/controllers/' . $controller . '.php')) {
-                    $controller = 'errorController';
-                }
-
-            } else {
+            if(!is_readable('app/controllers/' . $controller . '.php')) {
                 $controller = 'errorController';
-            }  
+            }
 
-            $controller = 'app\\controllers\\' . $controller;    
+        } else {
+            $controller = 'errorController';
+        }  
 
-            new $controller($this);  
-        } catch(RouterException $e) {
-            die('<b>Error de configuración:</b>' . $e->getMessage());
-        }       
+        $controller = 'app\\controllers\\' . $controller;    
+
+        new $controller($this);      
     }
 
 }

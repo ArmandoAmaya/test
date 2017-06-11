@@ -204,10 +204,10 @@ class ExceptionHandler
     {
         switch ($exception->getStatusCode()) {
             case 404:
-                $title = 'Sorry, the page you are looking for could not be found.';
+                $title = 'Lo sentimos, la página que busca no se pudo encontrar.';
                 break;
             default:
-                $title = 'Whoops, looks like something went wrong.';
+                $title = 'Vaya, parece que algo ha ido mal.';
         }
 
         $content = '';
@@ -235,7 +235,7 @@ EOF
                     foreach ($e['trace'] as $trace) {
                         $content .= '<tr><td>';
                         if ($trace['function']) {
-                            $content .= sprintf('at <span class="trace-class">%s</span><span class="trace-type">%s</span><span class="trace-method">%s</span>(<span class="trace-arguments">%s</span>)', $this->formatClass($trace['class']), $trace['type'], $trace['function'], $this->formatArgs($trace['args']));
+                            $content .= sprintf('de <span class="trace-class">%s</span><span class="trace-type">%s</span><span class="trace-method">%s</span>(<span class="trace-arguments">%s</span>)', $this->formatClass($trace['class']), $trace['type'], $trace['function'], $this->formatArgs($trace['args']));
                         }
                         if (isset($trace['file']) && isset($trace['line'])) {
                             $content .= $this->formatPath($trace['file'], $trace['line']);
@@ -248,9 +248,9 @@ EOF
             } catch (\Exception $e) {
                 // something nasty happened and we cannot throw an exception anymore
                 if ($this->debug) {
-                    $title = sprintf('Exception thrown when handling an exception (%s: %s)', get_class($e), $this->escapeHtml($e->getMessage()));
+                    $title = sprintf('Excepción generada al manejar una excepción (%s: %s)', get_class($e), $this->escapeHtml($e->getMessage()));
                 } else {
-                    $title = 'Whoops, looks like something went wrong.';
+                    $title = 'Vaya, parece que algo ha ido mal.';
                 }
             }
         }
@@ -304,7 +304,7 @@ EOF;
             .container { max-width: 1024px; margin: 0 auto; padding: 0 15px; }
             .container::after { content: ""; display: table; clear: both; }
 
-            .exception-summary { background: #B0413E; border-bottom: 2px solid rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(0, 0, 0, .3); flex: 0 0 auto; margin-bottom: 30px; }
+            .exception-summary { background: #181818; border-bottom: 2px solid rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(0, 0, 0, .3); flex: 0 0 auto; margin-bottom: 30px; }
 
             .exception-message-wrapper { display: flex; align-items: center; min-height: 70px; }
             .exception-message { flex-grow: 1; padding: 30px 0; }
@@ -320,10 +320,10 @@ EOF;
 
             .trace-message { font-size: 14px; font-weight: normal; margin: .5em 0 0; }
 
-            .trace-file-path, .trace-file-path a { margin-top: 3px; color: #999; color: #795da3; color: #B0413E; color: #222; font-size: 13px; }
-            .trace-class { color: #B0413E; }
+            .trace-file-path, .trace-file-path a { margin-top: 3px; color: #999; color: #795da3; color: #181818; color: #222; font-size: 13px; }
+            .trace-class { color: #181818; }
             .trace-type { padding: 0 2px; }
-            .trace-method { color: #B0413E; color: #222; font-weight: bold; color: #B0413E; }
+            .trace-method { color: #181818; color: #222; font-weight: bold; color: #181818; }
             .trace-arguments { color: #222; color: #999; font-weight: normal; color: #795da3; color: #777; padding-left: 2px; }
 
             @media (min-width: 575px) {
@@ -362,10 +362,10 @@ EOF;
         $fmt = $this->fileLinkFormat;
 
         if ($fmt && $link = is_string($fmt) ? strtr($fmt, array('%f' => $path, '%l' => $line)) : $fmt->format($path, $line)) {
-            return sprintf('<span class="block trace-file-path">in <a href="%s" title="Go to source">%s (line %d)</a></span>', $this->escapeHtml($link), $file, $line);
+            return sprintf('<span class="block trace-file-path">en <a href="%s" title="Ir al código">%s (línea %d)</a></span>', $this->escapeHtml($link), $file, $line);
         }
 
-        return sprintf('<span class="block trace-file-path">in <a title="%s line %3$d"><strong>%s</strong> (line %d)</a></span>', $this->escapeHtml($path), $file, $line);
+        return sprintf('<span class="block trace-file-path">en <a title="%s línea %3$d"><strong>%s</strong> (línea %d)</a></span>', $this->escapeHtml($path), $file, $line);
     }
 
     /**

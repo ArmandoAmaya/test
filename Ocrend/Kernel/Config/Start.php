@@ -14,6 +14,15 @@ use Ocrend\Kernel\Config\Config;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\Debug\ErrorHandler;
+use Symfony\Component\Debug\Debug;
+
+/**
+  * Manejador de excepciones y errores.
+*/
+ErrorHandler::register();
+ExceptionHandler::register();  
 
 /**
   * Obtiene la configuración inicial del sistema, conexión a la base de datos,
@@ -37,8 +46,8 @@ $session->start();
 $http = Request::createFromGlobals();
 
 /**
-  * Activa el debug
+  * Activa el debug si está definido "true" en el fichero de configuración
 */
 if($config['framework']['debug']) {
-  Symfony\Component\Debug\Debug::enable();
+  Debug::enable();
 }

@@ -285,6 +285,28 @@ class Users extends Models implements ModelsInterface {
     }
 
     /**
+      * Instala el módulo de usuarios en la base de datos para que pueda funcionar correctamete.
+      *
+      * @throws \RuntimeException si no se puede realizar la query
+    */
+    public function install() {
+        if(!$this->db->query("
+            CREATE TABLE IF NOT EXISTS `users` (
+                `id_user` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `name` varchar(100) NOT NULL,
+                `email` varchar(150) NOT NULL,
+                `pass` varchar(90) NOT NULL,
+                PRIMARY KEY (`id_user`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+        ")) {
+            throw new \RuntimeException('No se ha podido instalar el módulo de usuarios.');
+        }
+        
+        dump('Módulo instalado correctamente, el método <b>(new Model\Users)->install()</b> puede ser borrado.');
+        exit(1);
+    }
+
+    /**
       * __construct()
     */
     public function __construct(RouterInterface $router = null) {

@@ -34,7 +34,7 @@ class ModelsException extends \Exception {
             die(json_encode(array('success' => 0, 'message' => $this->getMessage())));
         }
         
-        die($this->getMessage());
+        throw new \RuntimeException($this->getMessage());
     }
 
 }

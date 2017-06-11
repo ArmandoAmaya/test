@@ -128,7 +128,7 @@ use Ocrend\Kernel\Database\DatabaseException;
             die(json_encode(array('success' => 0, 'message' => 'Error de conexión con la base de datos.')));
         }
         
-        die('Error de conexión con la base de datos.');
+        throw new \RuntimeException('Error de conexión con la base de datos.');
     } catch (DatabaseException $db) {
         $db->errorResponse();
     }
@@ -197,8 +197,8 @@ use Ocrend\Kernel\Database\DatabaseException;
         } else if(defined('GENERATOR')) {
            die("\n" . str_replace('::',"\n\n",$message));
         }
-        
-        die(str_replace('::',"<br />",$message));
+
+        throw new \RuntimeException(str_replace('::',"<br />",$message));
     } 
   }
 
@@ -301,14 +301,11 @@ use Ocrend\Kernel\Database\DatabaseException;
   /**
     * Alert para evitar clonaciones
     *
+    * @throws RuntimeException si se intenta clonar la conexión
     * @return void
   */
   final public function __clone() {
-    try {
-        throw new DatabaseException('Estás intentando clonar la Conexión');
-    } catch(DatabaseException $db) {
-        $db->errorResponse();
-    }  
+    throw new \RuntimeException('Estás intentando clonar la Conexión');
   }
 
  }
