@@ -173,25 +173,29 @@ final class Files extends \Twig_Extension {
     * @return bool true si todo se borró con éxito
   */
   final public static function rm_dir(string $dir) {
-    if(!file_exists($dir)) {
-      return true;
-    } else if (!is_dir($dir)) {
-        throw new \RuntimeException('El "directorio" especificado no es un directorio.');
+
+    # Evitar una desgracia
+    if(in_array($dir,[
+      'Ocrend/',
+      'Ocrend/Kernel/',
+      'Ocrend/vendor/',
+      'Ocrend/Kernel/Config/',
+      'Ocrend/Kernel/Controllers/',
+      'Ocrend/Kernel/Models/',
+      'Ocrend/Kernel/Helpers/',
+      'Ocrend/Kernel/Router/'
+    ])) {
+      throw new \RuntimeException('No puede eliminar la ruta ' . $dir . ' ya que es crítica.');
     }
 
-    if(!is_link($dir)) {
-      foreach (scandir($dir) as $file) {
-        if ($file === '.' || $file === '..') {
-            continue;
+    foreach(glob($dir . "/*") as $archivos_carpeta)   { 
+        if (is_dir($archivos_carpeta))   {
+            self::rm_dir($archivos_carpeta);
+        } else  {
+            unlink($archivos_carpeta);
         }
-        $currentPath = $dir . '/' . $file;
-        if (is_dir($currentPath)) {
-            self::rm_dir($currentPath);
-        } elseif (!unlink($currentPath)) {
-          throw new \RuntimeException('No se puede borrar ' . $currentPath);
-        }
-      }
     }
+    rmdir($dir);
 
     return true;
   }

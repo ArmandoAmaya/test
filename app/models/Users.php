@@ -266,15 +266,40 @@ class Users extends Models implements ModelsInterface {
     }
 
     /**
-      * Obtiene todos los datos del usuario conectado actualmente
+      * Obtiene datos de un usuario según su id en la base de datos
+      *    
+      * @param int $id: Id del usuario a obtener
+      * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios 
+      *
+      * @return false|array con información del usuario
+    */   
+    public function getUserById(int $id, string $select = '*') {
+       return $this->db->select($select,'users',"id_user='$this->id'",'LIMIT 1');
+    }
+    
+    /**
+      * Obtiene datos de un usuario según su id en la base de datos
+      *    
+      * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios 
+      *
+      * @return false|array con información de los usuarios
+    */  
+    public function getUsers(string $select = '*') {
+       return $this->db->select($select,'users');
+    }
+
+    /**
+      * Obtiene datos del usuario conectado actualmente
+      *
+      * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios
       *
       * @throws ModelsException si el usuario no está logeado
       * @return array con datos del usuario conectado
     */
-    public function getOwnerUser() : array {
+    public function getOwnerUser(string $select = '*') : array {
         try {
             if(null != $this->id_user) {
-                return $this->db->select('*','users',"id_user='$this->id_user'",'LIMIT 1')[0];
+                return $this->db->select($select,'users',"id_user='$this->id_user'",'LIMIT 1')[0];
             } 
            
             throw new ModelsException('El usuario no está logeado.');

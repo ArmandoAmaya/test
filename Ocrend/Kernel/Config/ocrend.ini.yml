@@ -27,7 +27,6 @@ sessions:
 
 # Variables del framework
 framework:
-  firewall: true
   debug: false
   version: 2.0.0
 
