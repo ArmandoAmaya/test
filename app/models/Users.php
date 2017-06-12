@@ -40,19 +40,7 @@ class Users extends Models implements ModelsInterface {
     */
     const MAX_ATTEMPTS_TIME = 120; # (dos minutos)
 
-    /**
-      * Intentos actuales del usuario
-      *
-      * @var int
-    */
-    private $actualAttempts = 0;
-
-    /**
-      * Últimos emails de usuarios que han intentado el login en la misma instancia
-      *
-      * @var array 
-    */
-    private $lastAttemps;
+    private $recentAttempts = array();
 
     /**
       * Genera la sesión con el id del usuario que ha iniciado
@@ -122,69 +110,43 @@ class Users extends Models implements ModelsInterface {
         return false;
     }
 
-    /**
-      * Llena el arreglo $this->lastAttempts con los emails de los intentos de login.
-      *
-      * @param string $email: Email del usuario que intenta el login
-      *
-      * @return void
-    */
-    private function setLoginAttempts(string $email) {
+    private function setDefaultAttempts() {
         global $session;
 
-        $this->lastAttemps[] = $email; 
-        $session->set('login_user_lastAttempts',$this->lastAttemps);
+        if(null != $session->get('login_user_recentAttempts')) {
+            $this->recentAttempts = $session->get('login_user_recentAttempts');
+        }
     }
 
-    /**
-      * Lógica que verifica la cantidad de intentos de login de un usuario, y bloquea el login si
-      * ya ha superado o ha llegado a la máxima cantida de intentos.
-      *
-      * Si ya han pasado self::MAX_ATTEMPTS_TIME segundos, reinicia los contadores.
-      *
-      * @param string $email: Email del usuario que intenta el login
-      * 
-      * @throws ModelsException cuando ya ha excedido el número máximo de intentos
-    */
+    private function setNewAttempt(string $email) {
+        if(!array_key_exists($email,$this->recentAttempts)) {
+            $this->recentAttempts[$email] = array(
+                'attempts' => 0, # Intentos
+                'time' => null # Tiempo 
+            );
+        } 
+
+        $this->recentAttempts[$email]['attempts']++;
+    }
+
     private function maximumAttempts(string $email) {
         global $session;
 
-        if(in_array($email,$this->lastAttemps)) {
-            $this->actualAttempts++;
-            $session->set('login_user_actualAttempts',$this->actualAttempts);
-        }
-
-        if($this->actualAttempts >= self::MAX_ATTEMPTS) {
-
-            if(null !== $session->get('login_user_timeAttempts')) {
-
-                $session->set('login_user_timeAttempts', time() + self::MAX_ATTEMPTS_TIME );
-
-            } else if(time() >= $session->get('login_user_timeAttempts')) {
-        
-                $session->set('login_user_actualAttempts',0); 
-                $this->actualAttempts = 0;
+        if($this->recentAttempts[$email]['attempts'] >= self::MAX_ATTEMPTS) {
+            
+            if(null == $this->recentAttempts[$email]['time']) {
+                $this->recentAttempts[$email]['time'] = time() + self::MAX_ATTEMPTS_TIME;
             }
-
-            throw new ModelsException('Ya ha excedido el máximo de intentos.');
-        }
-    }
-
-    /**
-      * Establece el contador de intentos y registro de últimos intentos
-      *
-      * @return void
-    */
-    private function sessionsAttemptsStart() {
-        global $session;
-
-        if(null !== $session->get('login_user_actualAttempts')) {
-            $this->actualAttempts = $session->get('login_user_actualAttempts');
+            
+            if(time() < $this->recentAttempts[$email]['time']) {
+                throw new ModelsException('Ya ha superado el número máximo de intentos.');
+            } else {
+                $this->recentAttempts[$email]['attempts'] = 0;
+                $this->recentAttempts[$email]['time'] = null;
+            }
         }
 
-        if(null !== $session->get('login_user_lastAttempts')) {
-            $this->lastAttemps = $session->get('login_user_lastAttempts');
-        }
+        $session->set('login_user_recentAttempts', $this->recentAttempts);
     }
 
     /**
@@ -196,6 +158,9 @@ class Users extends Models implements ModelsInterface {
         try {
             global $http;
 
+            # Definir de nuevo el control de intentos
+            $this->setDefaultAttempts();   
+
             # Obtener los datos $_POST
             $email = $http->request->get('email');
             $pass = $http->request->get('pass');
@@ -204,9 +169,11 @@ class Users extends Models implements ModelsInterface {
             if($this->functions->e($email,$pass)) {
                 throw new ModelsException('Credenciales incompletas.');
             }
-
-            # Verificar intentos de inicio de sesión
-            $this->setLoginAttempts($email);
+            
+            # Añadir intentos
+            $this->setNewAttempt($email);
+        
+            # Verificar intentos 
             $this->maximumAttempts($email);
 
             # Autentificar
@@ -335,8 +302,7 @@ class Users extends Models implements ModelsInterface {
       * __construct()
     */
     public function __construct(RouterInterface $router = null) {
-        parent::__construct($router);        
-        $this->sessionsAttemptsStart();
+        parent::__construct($router);
     }
 
     /**

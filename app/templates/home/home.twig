@@ -33,4 +33,13 @@
             </table>
         </div>
    </div>
+
+   <form role="form" id="login_form">
+    <input type="text" name="email" />
+    <input type="text" name="pass" />
+    <input type="button" id="login" value="enviar" />
+   </form>
+{% endblock %}
+{% block appFooter %}
+    <script src="views/app/js/login.js"></script>
 {% endblock %}

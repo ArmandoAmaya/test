@@ -10,6 +10,7 @@ require '../Ocrend/Kernel/Config/Start.php';
 
 # Preparar la API
 $app = new Silex\Application();
+unset($app['exception_handler']);
 
 # Verbos HTTP
 require 'http/get.php';

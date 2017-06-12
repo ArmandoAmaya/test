@@ -204,7 +204,7 @@ class ExceptionHandler
     {
         switch ($exception->getStatusCode()) {
             case 404:
-                $title = 'Lo sentimos, la página que busca no se pudo encontrar.';
+                $title = 'Lo sentimos, la ruta definida no existe.';
                 break;
             default:
                 $title = 'Vaya, parece que algo ha ido mal.';

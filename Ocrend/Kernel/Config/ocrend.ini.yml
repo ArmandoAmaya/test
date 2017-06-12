@@ -27,7 +27,7 @@ sessions:
 
 # Variables del framework
 framework:
-  debug: false
+  debug: true
   version: 2.0.0
 
 # Configuración del sitio
