@@ -148,11 +148,13 @@ abstract class Controllers {
       # Sólamente usuarios logeados
       if($this->controllerConfig['users_logged'] && !$is_logged) {
         $this->functions->redir();
+        exit(1);
       }
 
       # Sólamente usuarios no logeados
       if($this->controllerConfig['users_not_logged'] && $is_logged) {
         $this->functions->redir();
+        exit(1);
       }
     }
 
