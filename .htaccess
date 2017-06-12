@@ -3,7 +3,7 @@
     Deny from all
 </Files>
 
-<FilesMatch "(\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|json|lock|swp|py|xml|phtml|g)|~)$">
+<FilesMatch "(\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|json|lock|swp|py|xml|phtml|twig|gitignore|yml)|~)$">
     Order allow,deny
     Deny from all
     Satisfy All

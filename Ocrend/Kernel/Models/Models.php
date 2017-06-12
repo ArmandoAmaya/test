@@ -67,7 +67,10 @@ abstract class Models  {
       *
       * @param RouterInterface $router: Instancia de un Router 
       * @param array|null $databaseConfig: Configuración de conexión con base de datos con la forma
-      *                                    array('name' => string, 'motor' => string, 'new_instance' => bool)
+      *     'name' => string, # Nombre de la base de datos
+      *     'motor' => string, # Motor de la base de datos
+      *     'new_instance' => bool, # Establecer nueva instancia distinta a alguna ya existente
+      *                                    
     */
     protected function __construct(RouterInterface $router = null, $databaseConfig = null) {
         global $session;

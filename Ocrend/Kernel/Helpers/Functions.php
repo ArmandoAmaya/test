@@ -19,6 +19,26 @@ namespace Ocrend\Kernel\Helpers;
 
 final class Functions extends \Twig_Extension {
 
+   /**
+    * Redirecciona a una URL
+    *
+    * @param string $url: Sitio a donde redireccionará, si no se pasa, por defecto
+    * se redirecciona a la URL principal del sitio
+    *
+    * @return void
+  */
+  final public function redir($url = null) {
+    global $config;
+    
+    if(null == $url) {
+      $url = $config['site']['url'];
+    }
+    
+    \Symfony\Component\HttpFoundation\RedirectResponse::create($url)->send();
+  }
+
+  //------------------------------------------------
+
   /**
     * Calcula el porcentaje de una cantidad
     *

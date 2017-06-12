@@ -40,6 +40,11 @@ class Users extends Models implements ModelsInterface {
     */
     const MAX_ATTEMPTS_TIME = 120; # (dos minutos)
 
+    /**
+      * Log de intentos recientes con la forma 'email' => (int) intentos
+      *
+      * @var array
+    */
     private $recentAttempts = array();
 
     /**
@@ -110,6 +115,11 @@ class Users extends Models implements ModelsInterface {
         return false;
     }
 
+    /**
+      * Establece los intentos recientes desde la variable de sesión acumulativa
+      *
+      * @return void
+    */
     private function setDefaultAttempts() {
         global $session;
 
@@ -117,7 +127,14 @@ class Users extends Models implements ModelsInterface {
             $this->recentAttempts = $session->get('login_user_recentAttempts');
         }
     }
-
+    
+    /**
+      * Establece el intento del usuario actual o incrementa su cantidad si ya existe
+      *
+      * @param string $email: Email del usuario
+      *
+      * @return void
+    */
     private function setNewAttempt(string $email) {
         if(!array_key_exists($email,$this->recentAttempts)) {
             $this->recentAttempts[$email] = array(
@@ -129,6 +146,15 @@ class Users extends Models implements ModelsInterface {
         $this->recentAttempts[$email]['attempts']++;
     }
 
+    /**
+      * Controla la cantidad de intentos permitidos máximos por usuario, si llega al límite,
+      * el usuario podrá seguir intentando en self::MAX_ATTEMPTS_TIME segundos.
+      *
+      * @param string $email: Email del usuario
+      *
+      * @throws ModelsException cuando ya ha excedido self::MAX_ATTEMPTS
+      * @return void
+    */
     private function maximumAttempts(string $email) {
         global $session;
 
@@ -230,6 +256,21 @@ class Users extends Models implements ModelsInterface {
         } catch(ModelsException $e) {
             return array('success' => 0, 'message' => $e->getMessage());
         }        
+    }
+
+     /**
+      * Desconecta a un usuario si este está conectado, y lo devuelve al inicio
+      *
+      * @return void
+    */    
+    public function logout() {
+        global $session;
+
+        if(null != $session->get('user_id')) {
+            $session->remove('user_id');
+        }
+
+        $this->functions->redir();
     }
 
     /**

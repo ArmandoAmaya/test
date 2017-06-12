@@ -51,38 +51,109 @@ abstract class Controllers {
     */
     protected $functions;
 
-     /**
-      * Inicia la configuración inicial de cualquier controlador
+    /** 
+      * Parámetros de configuración para el controlador con la forma:
+      * 'parmáetro' => (bool) valor
+      *
+      * @var array
+    */
+    private $controllerConfig;
+
+    /**
+      * Configuración inicial de cualquier controlador
       *
       * @param RouterInterface $router: Instancia de un Router
-      * @param bool $twig_reload: true activa la recarga de caché estricto de twig
-      *                           false desactiva la recarga de caché estricto de twig    
+      * @param array|null $config: Arreglo de configuración con la forma  
+      *     'twig_cache_reload' => bool, # Configura el autoreload del caché de twig
+      *     'users_logged' => bool, # Configura el controlador para solo ser visto por usuarios logeados
+      *     'users_not_logged' => bool, # Configura el controlador para solo ser visto por !(usuarios logeados)
+      *
     */
-    protected function __construct(RouterInterface $router, bool $twig_reload = true) {
+    protected function __construct(RouterInterface $router, $config = null) {
         global $config, $http, $session;
+
+        # Instanciar las funciones
+        $this->functions = new Functions;
+
+        # Establecer la configuración para el controlador
+        $this->setControllerConfig($config);
+
+        # Verificar para quién está permitido este controlador
+        $this->knowVisitorPermissions();
 
         # Twig Engine http://gitnacho.github.io/Twig/
         $this->template = new \Twig_Environment(new \Twig_Loader_Filesystem('./app/templates/'), array(
             # ruta donde se guardan los archivos compilados
             'cache' => './app/templates/.cache/',
             # false para caché estricto, cero actualizaciones, recomendado para páginas 100% estáticas
-            'auto_reload' => $twig_reload,
+            'auto_reload' => $this->controllerConfig['twig_cache_reload'],
             # en true, las plantillas generadas tienen un método __toString() para mostrar los nodos generados
             'debug' => $config['framework']['debug']
         )); 
-
-        # Instanciar las funciones
-        $this->functions = new Functions();
         
         # Request global
-        $this->template->addGlobal('http', $http);
-        $this->template->addGlobal('session', $session);
+        $this->template->addGlobal('get', $http->query->all());
+        $this->template->addGlobal('server', $http->server->all());
+        $this->template->addGlobal('session', $session->all());
         $this->template->addGlobal('config', $config);
         $this->template->addExtension($this->functions);
 
         # Auxiliares
         $this->method = $router->getMethod();
         $this->isset_id = (bool) (is_numeric($router->getID()) && $router->getID() >= 1);
+    }
+
+    /**
+      * Establece los parámetros de configuración de un controlador
+      *
+      * @param RouterInterface $router: Instancia de un Router
+      * @param array|null $config: Arreglo de configuración   
+      *
+      * @return void
+    */
+    private function setControllerConfig($config) {
+      # Configuración por defecto
+      $this->controllerConfig['twig_cache_reload'] = true;
+      $this->controllerConfig['users_logged'] = false;
+      $this->controllerConfig['users_not_logged'] = false;
+
+      # Establecer las configuraciones pasadas
+      if(null != $config) {
+        # Configura el autoreload del caché de twig
+        if(array_key_exists('twig_cache_reload',$config)) {
+          $this->controllerConfig['twig_cache_reload'] = (bool) $config['twig_cache_reload'];
+        }
+        # Configura el controlador para solo ser visto por usuarios logeados
+        if(array_key_exists('users_logged',$config)) {
+          $this->controllerConfig['users_logged'] = (bool) $config['users_logged'];
+        }
+        # Configura el controlador para solo ser visto por usuario no logeados
+        if(array_key_exists('users_not_logged',$config)) {
+          $this->controllerConfig['users_not_logged'] = (bool) $config['users_not_logged'];
+        }
+      }
+    }
+    
+    /**
+      * Acción que regula quién entra o no al controlador según la configuración
+      *
+      * @return void
+    */
+    private function knowVisitorPermissions() {
+      global $session;
+
+      # Estado del visitante, ¿es un usuario logeado?
+      $is_logged = null == $session->get('user_id');
+
+      # Sólamente usuarios logeados
+      if($this->controllerConfig['users_logged'] && !$is_logged) {
+        $this->functions->redir();
+      }
+
+      # Sólamente usuarios no logeados
+      if($this->controllerConfig['users_not_logged'] && $is_logged) {
+        $this->functions->redir();
+      }
     }
 
 }
