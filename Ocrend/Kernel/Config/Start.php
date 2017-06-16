@@ -25,6 +25,13 @@ ErrorHandler::register();
 ExceptionHandler::register();  
 
 /**
+  * Versión mínima de PHP
+*/
+if (version_compare(phpversion(), '7.0.0', '<')) {
+  throw new \RuntimeException('La versión actual de PHP es' . phpversion() . ' y como mínimo se require la versión 7.0.0');
+}
+
+/**
   * Obtiene la configuración inicial del sistema, conexión a la base de datos,
   * constantes de phpmailer, credenciales de la api de paypal, etc.
 */

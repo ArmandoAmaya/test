@@ -29,6 +29,7 @@ final class Router implements RouterInterface {
         'none', # Sin ninguna regla
         'letters', # Sólamente letras
         'alphanumeric', # Letras y números
+        'url', # Con forma para URL (letras,números y el caracter -)
         'integer', # Sólamente números enteros
         'integer_positive', # Solamente números enteros positivos
         'float', # Sólamente números enteros
@@ -161,10 +162,13 @@ final class Router implements RouterInterface {
                 return $ruta;
             break;
             case 'letters':
-                return preg_match('[[:alpha:]]', $ruta) ? $ruta : null;
+                return preg_match("/^[a-zA-Z ]*$/", $ruta) ? $ruta : null;
             break;
             case 'alphanumeric':
-                return preg_match('[[:alnum:]]', $ruta) ? $ruta : null;
+                return preg_match('/^[a-zA-Z0-9 ]*$/', $ruta) ? $ruta : null;
+            break;
+            case 'url':
+                return preg_match('/^[a-zA-Z0-9- ]*$/', $ruta) ? $ruta : null;
             break;
             case 'integer':
                 return is_numeric($ruta) ? (int) $ruta : null;

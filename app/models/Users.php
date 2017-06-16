@@ -17,6 +17,7 @@ use Ocrend\Kernel\Models\ModelsInterface;
 use Ocrend\Kernel\Models\ModelsException;
 use Ocrend\Kernel\Router\RouterInterface;
 use Ocrend\Kernel\Helpers\Strings;
+use Ocrend\Kernel\Helpers\Emails;
 
 /**
  * Controla todos los aspectos de un usuario dentro del sistema.
@@ -257,9 +258,103 @@ class Users extends Models implements ModelsInterface {
             return array('success' => 0, 'message' => $e->getMessage());
         }        
     }
+    
+    /**
+      * Envía un correo electrónico al usuario que quiere recuperar la contraseña, con un token y una nueva contraseña.
+      * Si el usuario no visita el enlace, el sistema no cambiará la contraseña.
+      *
+      * @return void
+    */  
+    public function lostpass() {
+        try {
+            global $http, $config;
 
-     /**
-      * Desconecta a un usuario si este está conectado, y lo devuelve al inicio
+            # Obtener datos $_POST
+            $email = $http->request->get('email');
+            
+            # Campo lleno
+            if($this->functions->emp($email)) {
+                throw new ModelsException('El campo email debe estar lleno.');
+            }
+
+            # Filtro
+            $email = $this->db->scape($email);
+
+            # Obtener información del usuario 
+            $user_data = $this->db->select('id_user,name','users',"email='$email'",'LIMIT 1');
+
+            # Verificar correo en base de datos 
+            if(false === $user_data) {
+                throw new ModelsException('El email no está registrado en el sistema.');
+            }
+
+            # Generar token y contraseña 
+            $token = md5(time());
+            $pass = uniqid();
+
+            # Construir mensaje y enviar mensaje
+            $HTML = 'Hola <b>'. $user_data[0]['name'] .'</b>, ha solicitado recuperar su contraseña perdida, si no ha realizado esta acción no necesita hacer nada.
+					<br />
+					<br />
+					Para cambiar su contraseña por <b>'. $pass .'</b> haga <a href="'. $config['site']['url'] . 'lostpass/cambiar/&token='.$token.'&user='.$user_data[0]['id_user'].'" target="_blank">clic aquí</a>.';
+
+            # Enviar el correo electrónico
+			$dest[$email] = $user_data[0]['name'];
+			$email = Emails::send_mail($dest,Emails::plantilla($HTML),'Recuperar contraseña perdida');
+
+            # Verificar si hubo algún problema con el envío del correo
+            if(false === $email) {
+                throw new ModelsException('No se ha podido enviar el correo electrónico.');
+            }
+
+            # Actualizar datos 
+            $id_user = $user_data[0]['id_user'];
+            $this->db->update('users',array(
+                'tmp_pass' => Strings::hash($pass),
+                'token' => $token
+            ),"id_user='$id_user'",'LIMIT 1');
+
+            return array('success' => 1, 'message' => 'Se ha enviado un enlace a su correo electrónico.');
+        } catch(ModelsException $e) {
+            return array('success' => 0, 'message' => $e->getMessage());
+        }
+    }
+
+    /**
+      * Cambia la contraseña de un usuario en el sistema, luego de que éste haya solicitado cambiarla.
+      * Luego retorna al sitio de inicio con la variable GET success=(bool)
+      *
+      * La URL debe tener la forma URL/lostpass/cambiar/&token=TOKEN&user=ID
+      *
+      * @return void
+    */  
+    public function changeTemporalPass() {
+        global $config, $http;
+
+        # Respuesta por defecto
+        $success = false;
+        
+        # Obtener los datos $_GET 
+        $id_user = $http->query->get('user');
+        $token = $http->query->get('token');
+
+        if(!$this->functions->emp($token) && is_numeric($id_user) && $id_user >= 1) {
+            # Filtros a los datos
+            $id_user = $this->db->scape($id_user);
+            $token = $this->db->scape($token);
+            # Ejecutar el cambio
+            $this->db->query("UPDATE users SET pass=tmp_pass, tmp_pass='', token=''
+            WHERE id_user='$id_user' AND token='$token' LIMIT 1;");
+            # Éxito
+            $succes = true;
+        }
+        
+        # Devolover al sitio de inicio
+        $this->functions->redir($config['site']['url'] . '?sucess=' . $succes);
+    }
+
+    /**
+      * Desconecta a un usuario si éste está conectado, y lo devuelve al inicio
       *
       * @return void
     */    
@@ -329,6 +424,8 @@ class Users extends Models implements ModelsInterface {
                 `name` varchar(100) NOT NULL,
                 `email` varchar(150) NOT NULL,
                 `pass` varchar(90) NOT NULL,
+                `tmp_pass` varchar(90) NOT NULL,
+                `token` varchar(90) NOT NULL,
                 PRIMARY KEY (`id_user`)
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
         ")) {

@@ -35,6 +35,7 @@ final class Functions extends \Twig_Extension {
     }
     
     \Symfony\Component\HttpFoundation\RedirectResponse::create($url)->send();
+    exit(1);
   }
 
   //------------------------------------------------
