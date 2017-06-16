@@ -17,16 +17,17 @@ use Ocrend\Kernel\Controllers\Controllers;
 use Ocrend\Kernel\Controllers\ControllersInterface;
   
 /**
- * Controlador logout/
+ * Controlador {{controller}}/
  *
- * @author Brayan Narváez <prinick@ocrend.com>
+ * @author {{author}} <{{author_email}}>
 */
   
-class logoutController extends Controllers implements ControllersInterface {
+class {{controller}}Controller extends Controllers implements ControllersInterface {
 
     public function __construct(RouterInterface $router) {
         parent::__construct($router);   
-        (new Model\Users)->logout();
     }
+
+    {{content}}
 
 }

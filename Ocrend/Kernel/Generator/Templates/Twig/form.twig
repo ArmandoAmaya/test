@@ -1,0 +1,10 @@
+{% extends 'overall/layout' %}
+{% block appBody %}
+    <form id="{{view}}_form">
+        {{inputs}}
+        <button type="button" id="{{view}}">Enviar</button>
+    </form>
+{% endblock %}
+{% block appFooter %}
+    <script src="{{view}}/{{view}}.js" />
+{% endblock %}
