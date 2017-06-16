@@ -26,8 +26,7 @@ class {{controller}}Controller extends Controllers implements ControllersInterfa
 
     public function __construct(RouterInterface $router) {
         parent::__construct($router);   
+        {{content}}
     }
-
-    {{content}}
 
 }

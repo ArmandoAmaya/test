@@ -33,5 +33,6 @@ framework:
 # Configuración del sitio
 site:
   name: Ocrend Framework 2
-  author: Ocrend Software
+  author: Brayan Narváez
+  author_email: prinick@ocrend.com
   url: http://localhost/Framework/

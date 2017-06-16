@@ -25,4 +25,19 @@ use Ocrend\Kernel\Router\RouterInterface;
 
 class {{model}} extends Models implements ModelsInterface {
 
+    {{content}}
+
+    /**
+      * __construct()
+    */
+    public function __construct(RouterInterface $router = null) {
+        parent::__construct($router);
+    }
+
+    /**
+      * __destruct()
+    */ 
+    public function __destruct() {
+        parent::__destruct();
+    }
 }
