@@ -78,16 +78,43 @@ final class Generator {
     */
     const TEMPLATE_DIR = './Generator/Templates/';
 
+    /**
+      * Nombre del módulo a escribir.
+      *
+      * @var string
+    */
     private $name;
-    private $pattern = array(
+
+    /**
+      * Módulos a escribir
+      *
+      * @var array
+    */
+    private $modules = array(
       'model' => false,
       'view' => false,
       'controller' => false,
-      'api' => false,
       'js' => false,
       'database' => false,
-      'crud' => false
+      'crud' => false,
+      'api' => null # contiene el verbo http
     ); 
+
+    /**
+      * Nombre de la tabla a crear en la base de datos.
+      *
+      * @var string
+    */
+    private $table_name;
+
+    /**
+      * Colección de tablas para la base de datos.
+      * Con la forma:
+      * {'nombre_tabla' => array('tipo' => string , 'longitud' => null|int )}
+      *
+      * @var array
+    */
+    private $tablesCollection = array();
 
 
     /**
@@ -110,9 +137,6 @@ final class Generator {
         $this->writeLn('Comandos disponibles ');
         $this->writeLn('-------------------------------------');
         $this->writeLn();
-        $this->writeLn('Escribir en un fichero de verbo http de la api rest: ');
-        $this->writeLn('api:[metodo] [Nombre]');
-        $this->writeLn();
         $this->writeLn('Crear un crud conectado a la base de datos:');
         $this->writeLn('app:crud [Nombre] [Nombre de la tabla en la DB] campo1:tipo:longitud(opcional) campo2:tipo ...');
         $this->writeLn();
@@ -129,23 +153,23 @@ final class Generator {
         $this->writeLn('app:mv [Nombre]');
         $this->writeLn();
         $this->writeLn('Crear un modelo vacio:');
-        $this->writeLn('app:model [Nombre]');
+        $this->writeLn('app:m [Nombre]');
         $this->writeLn();
         $this->writeLn('Crear un controlador vacio:');
-        $this->writeLn('app:controller [Nombre]');
+        $this->writeLn('app:c [Nombre]');
         $this->writeLn();
         $this->writeLn('Crear una vista vacia:');
-        $this->writeLn('app:view [Nombre]');
+        $this->writeLn('app:v [Nombre]');
         $this->writeLn();
         $this->writeLn();
         $this->writeLn('Opciones extras, se aniaden al final de una instruccion.');
         $this->writeLn('-------------------------------------');
         $this->writeLn();
-        $this->writeLn('Generar un fichero javascript que se conecta con la api rest por ajax usando el verbo POST.');
+        $this->writeLn('Generar un fichero javascript de ajax.');
         $this->writeLn('-js');
         $this->writeLn();
-        $this->writeLn('Escribir en un fichero de verbo http de la api rest: ');
-        $this->writeLn('-api:[metodo]');
+        $this->writeLn('Escribe en el fichero del verbo http correspondiente en la api rest.');
+        $this->writeLn('-api:[verbo]');
         $this->writeLn();
         $this->writeLn('Crear una tabla en la base de datos, (No puede haber ninguna otra opcion despues de esta).');
         $this->writeLn('-db [Nombre de la tabla en la DB] campo1:tipo:longitud(opcional) campo2:tipo');
@@ -170,63 +194,124 @@ final class Generator {
 
       # Verificar comando
       $action = explode(':',$this->arguments[0]);
-      if(sizeof($action) != 2) {
-        throw new CommandException('El comando inicial debe tener la forma elemento:accion.');
+      if(sizeof($action) != 2 || $action[0] != 'app') {
+        throw new CommandException('El comando inicial debe tener la forma app:accion.');
       }
-
-      # Revisar acción 
-      if($action[0] == 'api') {
-        $this->checkRestMethod($action[1]);
-        // API TRUE
-      }
-      else if($action[0] == 'app') {
-        if($action[1] === 'crud') {
-          // CRUD TRUE
-        } else {
-          # Modelo
-          if(strpos($this->args[1], 'm') !== false) {
-            // MODELO TRUE
-          }
-          # Vista
-          if(strpos($this->args[1], 'v') !== false) {
-            // VIEW TRUE
-          }
-          # Controlador
-          if(strpos($this->args[1], 'c') !== false) {
-            // CONTROLLER TRUE
-          }
-        }
-      } else {
-        throw new CommandException('El comando no es valido, para mas informacion utilizar "-ayuda".');
-      }
-
-      /** 
-
-        ANALIZAR LAS OPTIONS
-
-        */
-
+  
       # Verificar que exista un nombre 
-      if(!array_key_exists(1,$this->argument)) {
+      if(!array_key_exists(1,$this->arguments)) {
         throw new CommandException('Se debe asignar un nombre.');
+      } else {
+        $this->name = $this->arguments[1];
       }
 
-     /**
+      # Saber si se pasaron opciones correctas
+      $lexer = false;
 
+      # Revisar lo que debe hacerse 
+      if($action[1] == 'crud') {
+        $this->modules['crud'] = true;
+      } else {
+        # Modelo
+        if(strpos($action[1], 'm') !== false) {
+          $lexer = true;
+          $this->modules['model'] = true;
+        }
+        # Controlador
+        if(strpos($action[1], 'c') !== false) {
+          $lexer = true;
+          $this->modules['controller'] = true;
+        }
+        # Vista
+        if(strpos($action[1], 'v') !== false) {
+          $lexer = true;
+          $this->modules['view'] = true;
+        }
+      }
 
-      api:[metodo]
-      app:crud [Nombre] [Tabla] campo:tipo campo:tipo campo:tipo
-      app:mvc [Nombre] -js -api:post
-      app:vc [Nombre]
-      app:mc [Nombre]
-      app:mv [Nombre]
-      app:m [Nombre]
-      app:c [Nombre]
-      app:v [Nombre]
-    
+      # Error
+      if(!$lexer) {
+        throw new CommandException('Problema en la sintaxis, para informacion usar: php gen.php -ayuda');
+      }
 
-     */
+      # Existencia de opciones
+      if(array_key_exists(2,$this->arguments)) {
+        $size = sizeof($this->arguments);
+        for($i = 2; $i < $size; $i++) {
 
+          # Base de datos
+          if($this->arguments[$i] == '-db') {  
+            # Revisar que exista el nombre
+            if(!array_key_exists($i + 1, $this->arguments)) {
+              throw new CommandException('Se necesita un nombre para la tabla en la base de datos.');
+            }
+            # Revisar la sintaxis del nombre 
+            else {
+              if(!preg_match('/^[a-zA-Z0-9_]*$/',$this->arguments[$i + 1])) {
+                throw new CommandException('El formato del nombre debe ser alfanumerico y el unico caracter extra permitido es el " _ "');
+              }
+              #  Establecer el nombre
+              $this->table_name = $this->arguments[$i + 1];
+            }
+
+            # Revisar que existe al menos un campo
+            if(!array_key_exists($i + 2, $this->arguments)) {
+              throw new CommandException('Se necesita al menos un campo para la tabla.');
+            }
+
+            # Recorrer los campos y revisar la sintaxis uno a uno
+            for($x = $i + 2; $x < $size; $x++) {
+              $campo = explode(':',$this->arguments[$x]);
+              # Requisito mínimo, nombre y tipo
+              if(sizeof($campo) >= 2) {
+                # Formato del nombre
+                if(!preg_match('/^[a-zA-Z0-9_]*$/',$campo[0])) {
+                  throw new CommandException('El formato del nombre del campo '. $campo[0] .' debe ser alfanumerico y el unico caracter extra permitido es el " _ "');
+                }
+                # Tipo de dato
+                if(!in_array(strtolower($campo[1]),['tinyint','bit','bool','smallint','mediumint','int','bigint','integer','float','xreal','double','decimal','date','datetime','timestamp','char','varchar','tinytext','text','mediumtext','longtext','enum'])) {
+                  throw new CommandException('El tipo de dato ' . $campo[1] . ' no existe.');
+                }
+                # Almacenar en la colección
+                $this->tablesCollection[$campo[0]] = array(
+                  'tipo' => strtoupper($campo[1]), 
+                  'longitud' => null
+                );
+              } else {
+                throw new CommandException('El formato del campo ' . $this->arguments[$x] . ' debe ser nombre:tipo.');
+              }
+
+              # Existe longitud
+              if(sizeof($campo) == 3) {
+                # Revisar valor de longitud
+                if($campo[2] < 0) {
+                  throw new CommandException('La longitud del campo ' . $campo[0] . ' debe ser positiva.');
+                }
+                # Poner longitud
+                $this->tablesCollection[$campo[0]]['longitud'] = $campo[2];
+              }
+            }
+
+            $this->modules['database'] = true;
+            break;
+          }
+
+          # Javascript
+          if($this->arguments[$i] == '-js') {
+            $this->modules['js'] = true;
+          }
+
+          # Api rest 
+          if(strpos($this->arguments[$i], '-api:') !== false) {
+            if(in_array($this->arguments[$i],['-api:get','-api:post','-api:put','-api:delete'])) {
+              $this->modules['api'] = explode(':',$this->arguments[$i])[1];
+            } else {
+              throw new CommandException('El verbo HTTP de la api rest no existe.');
+            }
+          }
+          
+        }
+      }
     }
 
     /**
