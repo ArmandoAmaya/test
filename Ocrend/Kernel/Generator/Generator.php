@@ -125,7 +125,7 @@ final class Generator {
       *
       * @return string : {{content}} del controlador
     */
-    private function createControllerConten() : string {
+    private function createControllerContent() : string {
       $content = "// Contenido del controlador... \n";
       # Si es un controlador de crud
       if($this->modules['crud']) {
@@ -174,7 +174,7 @@ final class Generator {
       *
       * @return string : {{content}} del modelo
     */
-    private function createModelConten() : string {
+    private function createModelContent() : string {
       $content = "// Contenido del modelo... \n";
       # Si es el modelo de un crud
       if($this->modules['crud']) {
@@ -337,7 +337,7 @@ $database_fields
       if($this->modules['crud'] || $this->modules['database']) {
         // Registrar base de datos
       }
-      
+
       # Crear controlador
       if($this->modules['crud'] || $this->modules['controller']) {
         $a = $this->createControllerContent();
@@ -346,7 +346,7 @@ $database_fields
 
       # Crear modelo
       if($this->modules['crud'] || $this->modules['model']) {
-        $a = $this->createModelConten();
+        $a = $this->createModelContent();
         // Crear modelo
       }
 
