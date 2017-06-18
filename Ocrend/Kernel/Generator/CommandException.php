@@ -23,7 +23,7 @@ class CommandException extends \Exception {
       * Muestra el error con un formato u otro dependiendo desde donde se hace la petición.
     */
     private function showError() {
-        exit($this->getMessage() . "\n");
+        exit("\nERROR: " . $this->getMessage() . "\n");
     }
 
     /**

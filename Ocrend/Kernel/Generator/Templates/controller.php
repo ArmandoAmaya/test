@@ -17,12 +17,12 @@ use Ocrend\Kernel\Controllers\Controllers;
 use Ocrend\Kernel\Controllers\ControllersInterface;
   
 /**
- * Controlador {{controller}}/
+ * Controlador {{view}}/
  *
  * @author {{author}} <{{author_email}}>
 */
   
-class {{controller}}Controller extends Controllers implements ControllersInterface {
+class {{controller}} extends Controllers implements ControllersInterface {
 
     public function __construct(RouterInterface $router) {
         parent::__construct($router);   

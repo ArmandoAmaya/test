@@ -25,11 +25,11 @@ use Ocrend\Kernel\Helpers\Functions;
 abstract class Models  {
     
     /**
-      * Obtiene la instancia de la base de datos actual
+      * Tiene la instancia de la base de datos actual
       *
-      * @var int 
+      * @var null|Database
     */
-    protected $db;
+    protected $db = null;
 
     /**
       * Tiene siempre el id pasado por la ruta, en caso de no haber ninguno, será cero.
@@ -128,6 +128,23 @@ abstract class Models  {
                 $this->databaseConfig['new_instance'] = (bool) $databaseConfig['new_instance'];
             }
         }
+    }
+
+    /**
+      * Asigna el id desde un modelo, ideal para cuando queremos darle un valor numérico 
+      * que proviene de un formulario y puede ser inseguro.
+      *
+      * @param mixed $id : Id a asignar en $this->id
+      * @param string $default_msg : Mensaje a mostrar en caso de que no se pueda asignar
+      *
+      * @throws ModelsException
+    */
+    protected function setId($id, string $default_msg = 'No puedede asignarse el id.') {
+        if(null == $id || !is_numeric($id) || $id <= 0) {
+            throw new ModelsException($default_msg);
+        }
+
+        $this->id = (int) $id;
     }
 
     /**

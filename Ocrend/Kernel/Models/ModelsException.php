@@ -23,7 +23,7 @@ class ModelsException extends \Exception {
       * __construct()
     */
     public function __construct($message = null, $code = 1, \Exception $previous = null) {
-        parent::__construct($message, $code,$previous);
+        parent::__construct($message, $code, $previous);
     }
 
     /**
