@@ -1,0 +1,22 @@
+<?php
+
+/*
+ * This file is part of the Ocrend Framewok 2 package.
+ *
+ * (c) Ocrend Software <info@ocrend.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+use Ocrend\Kernel\Generator\Generator;
+
+# Definir ruta de acceso permitida
+define('API_INTERFACE', '');
+
+# Conexión con el framework
+require 'Ocrend/vendor/autoload.php';
+require 'Ocrend/autoload.php';
+
+# Lanzar el generador
+new Generator($argv);
