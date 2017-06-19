@@ -1,8 +1,8 @@
 $('#{{view}}').click(function(e){
   e.preventDefault();
   $.ajax({
-    type : "POST",
-    url : "api/{{view}}",
+    type : "{{method}}",
+    url : "api/{{rest}}",
     data : $('#{{view}}_form').serialize(),
     success : function(json) {
       console.log(json.success);

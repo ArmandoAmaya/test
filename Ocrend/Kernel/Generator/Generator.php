@@ -12,7 +12,6 @@
 namespace Ocrend\Kernel\Generator;
 
 use Ocrend\Kernel\Generator\CommandException;
-use Ocrend\Kernel\Helpers\Files;
 
 /**
  * Generador de scripts en PHP
@@ -27,7 +26,7 @@ final class Generator {
       *
       * @var array 
     */
-    private $arguments;
+    private $arguments = array();
 
     /**
       * Ruta de modelos en la aplicación
@@ -109,7 +108,7 @@ final class Generator {
       *
       * @var string
     */
-    private $table_name;
+    private $table_name = '';
 
     /**
       * Colección de tablas para la base de datos.
@@ -119,9 +118,51 @@ final class Generator {
       * @var array
     */
     private $tablesCollection = array();
+    
+
+    /**
+      * Devuelve un string con el contenido de un archivo
+      *
+      * @param string $dir: Directorio del archivo a leer
+      *
+      * @return string : con contenido del archivo
+    */
+    private function readFile(string $dir) : string {
+      $lines = '';
+      $f = new \SplFileObject($dir);
+      while (!$f->eof()) {
+          $lines .= $f->fgets();
+      }
+      return (string) $lines;
+    }
+    /**
+      * Escribe un string completo en un archivo, si este no existe lo crea
+      *
+      * @param string $dir: Directorio del archivo escribir/crear
+      * @param string $content: Contenido a escribir
+      *
+      * @return int :catidad de bytes escritos en el archivo
+    */
+    private function writeFile(string $dir, string $content) : int {
+      $f = new \SplFileObject($dir,'w');
+      return (int) $f->fwrite($content);
+    }
+    /**
+      * Escribe un string al final, en un archivo existente
+      *
+      * @param string $dir: Directorio del archivo sobre el cual se va a escribir
+      * @param string $content: Contenido a escribir
+      *
+      * @return int : catidad de bytes escritos en el archivo
+    */
+    private function writeInFile(string $dir, string $content) : int {
+      $f = new \SplFileObject($dir,'a+');
+      return (int) $f->fwrite("\n\n" . $content);
+    }
 
     /**
       * Se encarga de definir el contenido que tendrá un controlador de acuerdo al comando.
+      * El contenido va a variar si se está haciendo un CRUD, si se creó también un modelo o una vista.
       *
       * @return string : {{content}} del controlador
     */
@@ -171,6 +212,8 @@ final class Generator {
 
     /**
       * Se encarga de definir el contenido que tendrá un modelo de acuerdo al comando.
+      * El contenido va a variar si se está haciendo un CRUD, si se ha definido un fichero ajax,
+      * si se ha escrito en la api y si se ha creado una tabla en la base de datos.
       *
       * @return string : {{content}} del modelo
     */
@@ -286,7 +329,7 @@ $database_fields
         }\n";
       } else {
         # Si existe una escritura en la api
-        if(null !== $this->modules['api']) {
+        if(null !== $this->modules['api'] || $this->modules['ajax']) {
           $content = "/**
             * Devuelve un arreglo para la api
             *
@@ -317,6 +360,12 @@ $database_fields
       return $content;
     }
 
+    /**
+      * Crea el contenido que se escribirá para la petición rest en uno de los verbos HTTP.
+      * El contenido dependerá de si se está creando o no un modelo también.
+      *
+      * @return void 
+    */
     private function createApiContent(bool $model) : string {
       if($model) {
         return "\n\n\$app->{{method}}('/{{view}}', function() use(\$app) {
@@ -332,6 +381,172 @@ $database_fields
 
     }
 
+    /**
+      * Crea un controlador según la configuración de los comandos.
+      *
+      * @return void 
+    */
+     private function createController() {
+      global $config;
+
+      # Obtener contenido
+      $content = $this->createControllerContent();
+
+      # Créditos
+      $content = str_replace('{{author_email}}',$config['site']['author'],$content);
+      $content = str_replace('{{author}}',$config['site']['author_email'],$content);
+    
+      # Información
+      $content = str_replace('{{model_var}}',strtolower($this->name['model'][0]),$content);
+      $content = str_replace('{{model}}',$this->name['model'],$content);
+      $content = str_replace('{{view}}',$this->name['view'],$content);
+      
+      # Crear el archivo
+      $route = self::R_CONTROLLERS . $this->name['controller'] .'.php';
+      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'controller.php'));
+      $this->writeFile($route,$content);
+      $this->writeLn('Creado el controlador ' . $route);
+    }
+
+    /**
+      * Crea un modelo según la configuración de los comandos.
+      *
+      * @return void 
+    */
+    private function createModel() {
+      global $config;
+
+      # Obtener contenido
+      $content = $this->createModelContent();
+
+      # Créditos
+      $content = str_replace('{{author_email}}',$config['site']['author'],$content);
+      $content = str_replace('{{author}}',$config['site']['author_email'],$content);
+    
+      # Información
+      $content = str_replace('{{model}}',$this->name['model'],$content);
+      $content = str_replace('{{view}}',$this->name['view'],$content);
+
+      # Base de datos
+      if($this->module['database']) {
+        $content = str_replace('{{table_name}}',$this->table_name,$content);
+        $content = str_replace('{{id_table_name}}','id_' . $this->table_name,$content);
+      }
+      
+      # Crear el archivo
+      $route = self::R_MODELS . $this->name['model'] .'.php';
+      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'model.php'));
+      $this->writeFile($route,$content);
+      $this->writeLn('Creado el modelo ' . $route);
+    }
+    
+    /**
+      * Crea los archivos javascript necesarios para el funcionamiento con ajax.
+      *
+      * @return void 
+    */
+    private function createAjax() {
+      # Obtener fuente
+      $content = $this->readFile(self::TEMPLATE_DIR . 'ajax.js');
+
+      # Reemplazar comunes
+      $content = str_replace('{{view}}',$this->name['view'],$content);
+      $content = str_replace('{{method}}',strtoupper($this->modules['api']),$content);
+
+      # Si es un crud son dos javascript
+      if($this->modules['crud']) {
+        # Apuntar a la api
+        $add = str_replace('{{rest}}',$this->name['view'] . '/crear',$content);
+        $edit = str_replace('{{rest}}',$this->name['view'] . '/editar',$content);
+        
+        # Rutas
+        $route_add = self::R_VIEWS . 'js/' . $this->name['view'] . '/crear.js';
+        $route_edit = self::R_VIEWS . 'js/' . $this->name['view'] . '/editar.js';
+
+        # Crear los archivos
+        $this->writeFile($route_add,$add);
+        $this->writeFile($route_edit,$edit);
+
+        # Mostrar en consola
+        $this->writeLn('Se ha creado ' . $route_add);
+        $this->writeLn('Se ha creado ' . $route_edit);
+      }
+      # Si no es un crud, es uno solo
+      else {
+        # Apuntar a la api
+        $content = str_replace('{{rest}}',$this->name['view'],$content);
+
+        # Ruta
+        $route = self::R_VIEWS . 'js/' . $this->name['view'] . '/' . $this->name['view'] . '.js';
+        $this->writeFile($route,$content);
+
+        # Mostrar en consola
+        $this->writeLn('Se ha creado ' . $route);
+      }
+    }
+
+    /**
+      * Escribe en el fichero del verbo HTTP correspondiente en la api.
+      *
+      * @return void 
+    */
+    private function writeInAPI() {
+      # Si es un crud son dos peticiones rest 
+      if($this->modules['crud']) {
+        # Comunes para edit & add
+        $add = $this->createApiContent(true);
+        $add = str_replace('{{method}}','post',$add);
+        $add = str_replace('{{model_var}}',strtolower($this->name['model'][0]),$add);
+        $add = str_replace('{{model}}',$this->name['model'],$add);
+
+        $edit = $add;
+
+        # Propios de add
+        $add = str_replace('{{view}}',$this->name['view'] . '/crear',$add);
+        $add = str_replace('{{method_model}}','add',$add);
+
+        # Propios de edit
+        $edit = str_replace('{{view}}',$this->name['view'] . '/editar',$edit);
+        $add = str_replace('{{method_model}}','edit',$add);
+
+        # Escribir en add y edit
+        $route = self::R_API . 'post.php';
+        $this->writeInFile($route,$add);
+        $this->writeInFile($route,$edit);
+      }
+      # Si no es un crud, se siguen las reglas 
+      else {
+        # Comunes
+        $content = $this->createApiContent($this->modules['model']); 
+        $content = str_replace('{{method}}',$this->modules['api'],$content);
+        $content = str_replace('{{view}}',$this->name['view'],$content);
+
+        # Si existe un modelo
+        if($this->modules['model']) {
+          $content = str_replace('{{model_var}}',strtolower($this->name['model'][0]),$content);
+          $content = str_replace('{{model}}',$this->name['model'],$content);
+          $content = str_replace('{{method_model}}','foo',$content);
+        }
+        
+        # Escribir en el archivo
+        $route = self::R_API . $this->modules['api'] . '.php';
+        $this->writeInFile($route,$content);
+      }
+
+      # Mostrar mensaje
+      $this->writeLn('Se ha escrito en ' . $route);
+
+      # Crear fichero javascript
+      if($this->modules['crud'] || $this->modules['ajax']) {
+        $this->createAjax();
+      }
+    }
+
+    /**
+      * Lanzador para empezar a crear todos los archivos según los comandos.
+      *
+      * @return void 
+    */
     private function buildFiles() {
       # Crear tabla en la base de datos
       if($this->modules['crud'] || $this->modules['database']) {
@@ -340,31 +555,22 @@ $database_fields
 
       # Crear controlador
       if($this->modules['crud'] || $this->modules['controller']) {
-        $a = $this->createControllerContent();
-        // Crear controlador
+        $this->createController();
       }
 
       # Crear modelo
       if($this->modules['crud'] || $this->modules['model']) {
-        $a = $this->createModelContent();
-        // Crear modelo
+        $this->createModelContent();
       }
 
-      # Crear vista con ajax
-      if($this->modules['view'] && ($this->modules['ajax'] || $this->modules['api'])) {
-        
+      # Escribir en la api rest 
+      if($this->modules['ajax'] || $this->modules['api'] !== null || $this->modules['crud']) {
+        $this->writeInAPI();
       }
 
-      # Ajax o api (escribir en la api) y generar javascript
-      if($this->modules['ajax'] || $this->modules['api']) {
-        # Escribir la api
-        $a = $this->createApiContent($this->modules['model']);
-        // Crear API + JS
-      }
-
-      # Crear vistas y ajax para el crud
-      if($this->modules['crud']) {
-
+      # Crear vista
+      if($this->modules['crud'] || $this->modules['view']) {
+        //Crear vista
       }
     }
 
@@ -559,8 +765,8 @@ $database_fields
             break;
           }
 
-          # Javascript ajax
-          if($this->arguments[$i] == '-ajax') {
+          # Javascript ajax valores por defecto, también los mismos si existe un crud
+          if($this->arguments[$i] == '-ajax' || $this->modules['crud']) {
             $this->modules['ajax'] = true;
             $this->modules['api'] = 'post';
           }
