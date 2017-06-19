@@ -34,11 +34,3 @@ $app->post('/lostpass', function() use($app) {
 
     return $app->json($u->lostpass());   
 });
-
-/*
-$app->post('/', function() use($app) {
-
-    return $app->json(array());
-    
-});
-*/

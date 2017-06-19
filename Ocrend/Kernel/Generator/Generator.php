@@ -75,7 +75,7 @@ final class Generator {
       *
       * @var string
     */
-    const TEMPLATE_DIR = './Generator/Templates/';
+    const TEMPLATE_DIR = './Ocrend/Kernel/Generator/Templates/';
 
     /**
       * Nombre del módulo a escribir.
@@ -372,12 +372,12 @@ $database_fields
             \${{model_var}} = new Model\{{model}}; 
 
             return \$app->json(\${{model_var}}->{{method_model}}());   
-        });";
+    });";
       }
 
       return "\n\n\$app->{{method}}('/{{view}}', function() use(\$app) {
             return \$app->json(array('success' => 0, 'message' => 'Funcionando.'));   
-        });";
+    });";
 
     }
 
@@ -391,19 +391,22 @@ $database_fields
 
       # Obtener contenido
       $content = $this->createControllerContent();
+      
+      # Cargar plantilla
+      $route = self::R_CONTROLLERS . $this->name['controller'] .'.php';
+      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'controller.php'));
 
       # Créditos
-      $content = str_replace('{{author_email}}',$config['site']['author'],$content);
-      $content = str_replace('{{author}}',$config['site']['author_email'],$content);
+      $content = str_replace('{{author}}',$config['site']['author'],$content);
+      $content = str_replace('{{author_email}}',$config['site']['author_email'],$content);
     
       # Información
       $content = str_replace('{{model_var}}',strtolower($this->name['model'][0]),$content);
       $content = str_replace('{{model}}',$this->name['model'],$content);
       $content = str_replace('{{view}}',$this->name['view'],$content);
-      
+      $content = str_replace('{{controller}}',$this->name['controller'],$content);
+
       # Crear el archivo
-      $route = self::R_CONTROLLERS . $this->name['controller'] .'.php';
-      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'controller.php'));
       $this->writeFile($route,$content);
       $this->writeLn('Creado el controlador ' . $route);
     }
@@ -419,23 +422,25 @@ $database_fields
       # Obtener contenido
       $content = $this->createModelContent();
 
+      # Base de datos
+      if($this->modules['database']) {
+        $content = str_replace('{{table_name}}',$this->table_name,$content);
+        $content = str_replace('{{id_table_name}}','id_' . $this->table_name,$content);
+      }
+      
+      # Cargar Plantilla
+      $route = self::R_MODELS . $this->name['model'] .'.php';
+      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'model.php'));
+
       # Créditos
-      $content = str_replace('{{author_email}}',$config['site']['author'],$content);
-      $content = str_replace('{{author}}',$config['site']['author_email'],$content);
+      $content = str_replace('{{author}}',$config['site']['author'],$content);
+      $content = str_replace('{{author_email}}',$config['site']['author_email'],$content);
     
       # Información
       $content = str_replace('{{model}}',$this->name['model'],$content);
       $content = str_replace('{{view}}',$this->name['view'],$content);
 
-      # Base de datos
-      if($this->module['database']) {
-        $content = str_replace('{{table_name}}',$this->table_name,$content);
-        $content = str_replace('{{id_table_name}}','id_' . $this->table_name,$content);
-      }
-      
       # Crear el archivo
-      $route = self::R_MODELS . $this->name['model'] .'.php';
-      $content = str_replace('{{content}}',$content,$this->readFile(self::TEMPLATE_DIR . 'model.php'));
       $this->writeFile($route,$content);
       $this->writeLn('Creado el modelo ' . $route);
     }
@@ -463,6 +468,9 @@ $database_fields
         $route_add = self::R_VIEWS . 'js/' . $this->name['view'] . '/crear.js';
         $route_edit = self::R_VIEWS . 'js/' . $this->name['view'] . '/editar.js';
 
+        # Crear la carpeta
+        mkdir(self::R_VIEWS . 'js/' . $this->name['view'] .'/',0777,true);
+
         # Crear los archivos
         $this->writeFile($route_add,$add);
         $this->writeFile($route_edit,$edit);
@@ -478,6 +486,11 @@ $database_fields
 
         # Ruta
         $route = self::R_VIEWS . 'js/' . $this->name['view'] . '/' . $this->name['view'] . '.js';
+
+        # Crear la carpeta
+        mkdir(self::R_VIEWS . 'js/' . $this->name['view'] .'/',0777,true);
+        
+        # Crear archivo
         $this->writeFile($route,$content);
 
         # Mostrar en consola
@@ -560,7 +573,7 @@ $database_fields
 
       # Crear modelo
       if($this->modules['crud'] || $this->modules['model']) {
-        $this->createModelContent();
+        $this->createModel();
       }
 
       # Escribir en la api rest 

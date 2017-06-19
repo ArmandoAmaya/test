@@ -18,6 +18,7 @@ define('GENERATOR',true);
 # Conexión con el framework
 require 'Ocrend/vendor/autoload.php';
 require 'Ocrend/autoload.php';
+require 'Ocrend/Kernel/Config/Start.php';
 
 # Lanzar el generador
 new Generator($argv);
