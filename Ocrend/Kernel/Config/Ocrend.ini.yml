@@ -36,3 +36,6 @@ site:
   author: Brayan Narváez
   author_email: prinick@ocrend.com
   url: http://localhost/Framework/
+  router:
+    path: localhost/Framework/
+    protocol: http

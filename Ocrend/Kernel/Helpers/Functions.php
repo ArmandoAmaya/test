@@ -179,6 +179,30 @@ final class Functions extends \Twig_Extension {
    //------------------------------------------------
 
   /**
+    *  Devuelve la etiqueta <base> html adecuada para que los assets carguen desde allí.
+    *  Se adapta a la configuración del dominio en general.
+    *
+    * @return string <base href="ruta" />
+  */
+   public function base_assets() : string {
+    global $config, $http;
+
+    # Revisar subdominio
+    $server = $http->server->get('SERVER_NAME');
+    $www = $server[0] . $server[1] . $server[2];
+    # Revisar protocolo
+    $base = $config['site']['router']['protocol'] . '://';
+
+    if(strtolower($www) == 'www') {
+      $base .= 'www.' . $config['site']['router']['path'];
+    } else {
+      $base .= $config['site']['router']['path'];
+    }
+  
+    return '<base href="'.$base.'" />';
+   }
+
+  /**
    * Se obtiene de Twig_Extension y sirve para que cada función esté disponible como etiqueta en twig
     *
    * @return array: Todas las funciones con sus respectivos nombres de acceso en plantillas twig
@@ -191,7 +215,8 @@ final class Functions extends \Twig_Extension {
        new \Twig_Function('emp', array($this, 'emp')),
        new \Twig_Function('e_dynamic', array($this, 'e')),
        new \Twig_Function('all_full', array($this, 'all_full')),
-       new \Twig_Function('fecha', array($this, 'fecha'))
+       new \Twig_Function('fecha', array($this, 'fecha')),
+       new \Twig_Function('base_assets',array($this, 'base_assets'))
      );
    }
 
