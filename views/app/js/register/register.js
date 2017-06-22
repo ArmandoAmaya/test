@@ -1,4 +1,9 @@
-$('#register').click(function(e){
+/**
+ * Ajax action to api rest
+ * 
+ * @param {*} e 
+*/
+function register(e){
   e.preventDefault();
   $.ajax({
     type : "POST",
@@ -17,4 +22,16 @@ $('#register').click(function(e){
       console.log('Ha ocurrido un problema.');
     }
   });
+}
+
+/**
+ * Events
+ */
+$('#register').click(function(e) {
+  register(e);
+});
+$('#register_form').keypress(function(e) {
+    if(e.which == 13) {
+        register(e);
+    }
 });

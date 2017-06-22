@@ -1,4 +1,9 @@
-$('#login').click(function(e){
+/**
+ * Ajax action to api rest
+ * 
+ * @param {*} e 
+*/
+function login(e){
   e.preventDefault();
   $.ajax({
     type : "POST",
@@ -17,4 +22,16 @@ $('#login').click(function(e){
       console.log('Ha ocurrido un problema.');
     }
   });
+}
+
+/**
+ * Events
+ */
+$('#login').click(function(e) {
+  login(e);
+});
+$('#login_form').keypress(function(e) {
+    if(e.which == 13) {
+        login(e);
+    }
 });

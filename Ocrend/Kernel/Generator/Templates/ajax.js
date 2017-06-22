@@ -1,4 +1,9 @@
-$('#{{view}}').click(function(e){
+/**
+ * Ajax action to api rest
+ * 
+ * @param {*} e 
+*/
+function {{view}}(e){
   e.preventDefault();
   $.ajax({
     type : "{{method}}",
@@ -17,4 +22,16 @@ $('#{{view}}').click(function(e){
       console.log('Ha ocurrido un problema.');
     }
   });
+}
+
+/**
+ * Events
+ */
+$('#{{view}}').click(function(e) {
+  {{view}}(e);
+});
+$('#{{view}}_form').keypress(function(e) {
+    if(e.which == 13) {
+        {{view}}(e);
+    }
 });

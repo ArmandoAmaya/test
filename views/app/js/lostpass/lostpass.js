@@ -1,4 +1,9 @@
-$('#lostpass').click(function(e){
+/**
+ * Ajax action to api rest
+ * 
+ * @param {*} e 
+*/
+function lostpass(e){
   e.preventDefault();
   $.ajax({
     type : "POST",
@@ -17,4 +22,16 @@ $('#lostpass').click(function(e){
       console.log('Ha ocurrido un problema.');
     }
   });
+}
+
+/**
+ * Events
+ */
+$('#lostpass').click(function(e) {
+  lostpass(e);
+});
+$('#lostpass_form').keypress(function(e) {
+    if(e.which == 13) {
+        lostpass(e);
+    }
 });

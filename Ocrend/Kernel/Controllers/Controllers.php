@@ -11,6 +11,7 @@
 
 namespace Ocrend\Kernel\Controllers;
 
+use app\models as Model;
 use Ocrend\Kernel\Router\RouterInterface;
 use Ocrend\Kernel\Helpers\Functions;
 
@@ -63,20 +64,20 @@ abstract class Controllers {
       * Configuración inicial de cualquier controlador
       *
       * @param RouterInterface $router: Instancia de un Router
-      * @param array|null $config: Arreglo de configuración con la forma  
+      * @param array|null $configController: Arreglo de configuración con la forma  
       *     'twig_cache_reload' => bool, # Configura el autoreload del caché de twig
       *     'users_logged' => bool, # Configura el controlador para solo ser visto por usuarios logeados
       *     'users_not_logged' => bool, # Configura el controlador para solo ser visto por !(usuarios logeados)
       *
     */
-    protected function __construct(RouterInterface $router, $config = null) {
+    protected function __construct(RouterInterface $router, $configController = null) {
         global $config, $http, $session;
 
         # Instanciar las funciones
         $this->functions = new Functions;
 
         # Establecer la configuración para el controlador
-        $this->setControllerConfig($config);
+        $this->setControllerConfig($configController);
 
         # Verificar para quién está permitido este controlador
         $this->knowVisitorPermissions();
@@ -143,7 +144,7 @@ abstract class Controllers {
       global $session;
 
       # Estado del visitante, ¿es un usuario logeado?
-      $is_logged = null == $session->get('user_id');
+      $is_logged = null != $session->get('user_id');
 
       # Sólamente usuarios logeados
       if($this->controllerConfig['users_logged'] && !$is_logged) {
