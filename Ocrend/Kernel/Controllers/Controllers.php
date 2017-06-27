@@ -79,9 +79,6 @@ abstract class Controllers {
         # Establecer la configuración para el controlador
         $this->setControllerConfig($configController);
 
-        # Verificar para quién está permitido este controlador
-        $this->knowVisitorPermissions();
-
         # Twig Engine http://gitnacho.github.io/Twig/
         $this->template = new \Twig_Environment(new \Twig_Loader_Filesystem('./app/templates/'), array(
             # ruta donde se guardan los archivos compilados
@@ -98,6 +95,9 @@ abstract class Controllers {
         $this->template->addGlobal('session', $session->all());
         $this->template->addGlobal('config', $config);
         $this->template->addExtension($this->functions);
+
+        # Verificar para quién está permitido este controlador
+        $this->knowVisitorPermissions();
 
         # Auxiliares
         $this->method = $router->getMethod();

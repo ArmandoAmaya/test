@@ -25,7 +25,9 @@ use Ocrend\Kernel\Controllers\ControllersInterface;
 class lostpassController extends Controllers implements ControllersInterface {
 
     public function __construct(RouterInterface $router) {
-        parent::__construct($router);   
+        parent::__construct($router, array(
+            'users_not_logged' => true
+        ));   
         (new Model\Users)->changeTemporalPass();
     }
 
