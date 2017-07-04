@@ -1,11 +1,13 @@
 {% extends 'overall/layout' %}
 {% block appBody %}
-    <table>
-        <thead>
-            {{thead}}
-        </thead>
-        <tbody>
-            {{tbody}}
-        </tbody>
-    </table>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+{{thead}}
+            </thead>
+            <tbody>
+{{tbody}}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -120,6 +120,82 @@ final class Generator {
     */
     private $tablesCollection = array();
 
+    /**
+      * Crea el contenido de una vista de formulario.
+      *
+      * @param bool $is_crud: Utilizado para saber si se llama desde un crud
+      * @param bool $edit: En caso de que sea desde un crud, se usa para definir los {{value}} automáticos
+      * 
+      * @return string con el contenido
+    */
+    private function createViewFormContent(bool $is_crud, bool $edit = false) : string {
+      # Obtener formato para inputs
+      $inputs = $this->readFile(self::TEMPLATE_DIR . 'Twig/Resources/inputs.twig');
+
+      # Obtener la vista
+      $form = $this->readFile(self::TEMPLATE_DIR . 'Twig/form.twig');
+
+      # Reemplazar datos básicos
+      $form = str_replace('{{view}}',$this->name['view'],$form);
+      $form = str_replace('{{model}}',$this->name['model'],$form);
+
+      # Verificar si hay campos para una base de datos
+      if($this->modules['database']) {
+        # Desde la edición
+        if($edit) {
+          $form = str_replace('{{ajax_file_name}}','editar',$form);
+        } else {
+          $form = str_replace('{{ajax_file_name}}','crear',$form);
+        }
+        # Conjunto de inputs
+        $final_inputs = "\n";
+        # Reemplazar inputs
+        foreach($this->tablesCollection as $name => $field_info) {
+          # Si puede ser de tipo email
+          if(false !== strpos($name,'email')) {
+             $field_input = str_replace('{{type_input}}','email',$inputs);
+          # Si puede ser un teléfono 
+          } elseif(false !== strpos($name,'phone') 
+               || false !== strpos($name,'telefono') 
+               || false !== strpos($name,'celular')) {
+             $field_input = str_replace('{{type_input}}','tel',$inputs);
+          # Si no, un texto cualquiera
+          } else {
+            $field_input = str_replace('{{type_input}}','text',$inputs);
+          }
+          
+          # Desde la edición
+          if($edit) {
+            $field_input = str_replace('{{value}}','{{ data.'.$name.' }}',$field_input);
+          } else {
+            $field_input = str_replace('{{value}}','',$field_input);
+          }
+          
+          # Últimos retoques
+          $field_input = str_replace('{{name}}',$name,$field_input);
+          $field_input = str_replace('{{label}}',ucwords(str_replace('_',' ',$name)),$field_input);
+
+          # Añadir el input al formulario
+          $final_inputs .= "$field_input\n\n";
+        }
+        # Reemplazo final
+        $form = str_replace('{{inputs}}',$final_inputs,$form);    
+      }
+      # Si no, es un formulario por defecto que tiene ajax 
+      else {
+        # Reemplazar datos básicos
+        $form = str_replace('{{ajax_file_name}}',$this->name['view'],$form);
+        # Reemplazar inputs
+        $inputs = str_replace('{{type_input}}','text',$inputs);
+        $inputs = str_replace('{{value}}','',$inputs);
+        $inputs = str_replace('{{name}}','ejemplo',$inputs);
+        $inputs = str_replace('{{label}}','Campo de ejemplo',$inputs);
+        # Reemplazo final
+        $form = str_replace('{{inputs}}',$inputs,$form);        
+      }
+
+      return $form;
+    }
 
     /**
       * Crea las vistas solicitadas por comando
@@ -127,7 +203,47 @@ final class Generator {
       * @return void
     */
     private function createViews() {
+      # Ruta para las vistas
+      $ruta = self::R_TEMPLATES . $this->name['view'] . '/';
 
+      # Crear ruta si no existe
+      if(!is_dir($ruta)) {
+        mkdir($ruta,0777,true);
+      # Si existe la ruta existen ficheros dentro
+      } else {
+        throw new CommandException('La ruta ' . $ruta . ' ya existe.');
+      }
+
+      # Si es un crud se utilizan form.twig y table.twig con toda la carpeta Templates/Twig/Resources
+      if($this->modules['crud']) {
+        # Obtener la vista CREACIÓN
+        $form = $this->createViewFormContent(true);
+        # Crear la vista CREACIÓN
+        $this->writeFile($ruta . 'crear.twig',$form);
+        $this->writeLn('Se ha creado el fichero ' . $ruta . 'crear.twig');
+
+        # Obtener la vista EDICIÓN
+        $form = $this->createViewFormContent(true,true);
+        # Crear la vista EDICIÓN
+        $this->writeFile($ruta . 'editar.twig',$form);
+        $this->writeLn('Se ha creado el fichero ' . $ruta . 'editar.twig');
+      }
+      # Si hay un modelo y una petición ajax, vista form.twig
+      else if($this->modules['model'] && ($this->modules['ajax'] || null !== $this->modules['api'])) {
+        # Obtener la vista
+        $form = $this->createViewFormContent(false);
+        # Crear la vista
+        $this->writeFile($ruta . $this->name['view'] . '.twig',$form);
+        $this->writeLn('Se ha creado el fichero ' . $ruta . $this->name['view'] . '.twig');
+      } 
+      # Vista por defecto cuando no hay modelos ni crud blank.twig
+      else {
+        # Obtener la vista
+        $blank = $this->readFile(self::TEMPLATE_DIR . 'Twig/blank.twig');
+        # Crear la vista
+        $this->writeFile($ruta . $this->name['view'] . '.twig',$blank);
+        $this->writeLn('Se ha creado el fichero ' . $ruta . $this->name['view'] . '.twig');
+      }
     }
 
     /**
@@ -638,7 +754,7 @@ $database_fields
       $this->writeLn('Se ha escrito en ' . $route);
 
       # Crear fichero javascript
-      if($this->modules['crud'] || $this->modules['ajax']) {
+      if($this->modules['crud'] || $this->modules['ajax'] || null !== $this->modules['api']) {
         $this->createAjax();
       }
     }
