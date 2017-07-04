@@ -120,6 +120,16 @@ final class Generator {
     */
     private $tablesCollection = array();
 
+
+    /**
+      * Crea las vistas solicitadas por comando
+      *
+      * @return void
+    */
+    private function createViews() {
+
+    }
+
     /**
       * Escribe un mensaje en consola y salta de línea 
       *
@@ -661,7 +671,7 @@ $database_fields
 
       # Crear vista
       if($this->modules['crud'] || $this->modules['view']) {
-        //Crear vista
+        $this->createViews();
       }
     }
 
