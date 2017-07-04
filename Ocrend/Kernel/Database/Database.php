@@ -62,7 +62,6 @@ use Ocrend\Kernel\Database\DatabaseException;
   */
   final public function __construct(string $name, string $motor) {
     try {
-      
       global $config;
 
       switch ($motor) {
@@ -159,12 +158,12 @@ use Ocrend\Kernel\Database\DatabaseException;
   /**
     * Sana un valor para posteriormente ser introducido en una query
     *
-    * @param string/int/float a sanar
+    * @param null/string/int/float a sanar
     *
     * @return int/float/string sanados según sea el tipo de dato pasado por parámetro
   */
   final public function scape($e) {
-    if(!isset($e)) {
+    if(null == $e) {
       return '';
     }
 

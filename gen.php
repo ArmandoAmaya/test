@@ -13,7 +13,7 @@ use Ocrend\Kernel\Generator\Generator;
 
 # Definir ruta de acceso permitida
 define('API_INTERFACE', '');
-define('GENERATOR',true);
+define('GENERATOR', true);
 
 # Conexión con el framework
 require 'Ocrend/vendor/autoload.php';
