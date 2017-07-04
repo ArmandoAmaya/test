@@ -15,12 +15,6 @@ phpmailer:
   pass: 
   port: 465
 
-# Credenciales de uso de SDK PayPal
-paypal:
-  mode: sandbox
-  client_id: 
-  client_secret:
-
 # Configuración de sesiones
 sessions:
   life_time: 3600 
