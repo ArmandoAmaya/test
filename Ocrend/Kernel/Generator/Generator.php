@@ -121,12 +121,67 @@ final class Generator {
     private $tablesCollection = array();
 
     /**
+      * Crea el contenido de una tabla.
+      *
+      * @return string con el contenido del formulario
+    */
+    private function createViewTableContent() : string {
+      # Obtener el formato de la tabla
+      $table = $this->readFile(self::TEMPLATE_DIR . 'Twig/table.twig');
+
+      # Obtener el formato del thead
+      $thead = $this->readFile(self::TEMPLATE_DIR . 'Twig/Resources/thead.twig');
+
+      # Obtener el formato del tbody
+      $tbody = $this->readFile(self::TEMPLATE_DIR . 'Twig/Resources/tbody.twig');
+
+      # Obtener el formato de los actions
+      $actions = $this->readFile(self::TEMPLATE_DIR . 'Twig/Resources/actions.twig');
+      $actions = str_replace('{{view}}',$this->name['view'],$actions);
+      $actions = str_replace('{{id_element}}','{{ d.id_'.$this->table_name.' }}',$actions);
+
+      # Obtener el formato del títutlo de las acciones
+      $actions_title = $this->readFile(self::TEMPLATE_DIR . 'Twig/Resources/actions_title.twig');
+
+      # Reemplazos base
+      $table = str_replace('{{view}}',$this->name['view'],$table);
+      $table = str_replace('{{model}}',$this->name['model'],$table);
+
+      # Inicio del thead
+      $thead_final = "<tr>\n";
+      # Inicio del tbody
+      $tbody_final = "{% for d in data if false != data %}\n<tr>\n";
+
+      # Recorrer los campos de la tabla creada
+      foreach($this->tablesCollection as $name => $field_info) {
+        # Hacer thead
+        $thead_final .= "\t" . str_replace('{{name}}',ucwords(str_replace('_',' ',$name)),$thead) . "\n";
+        # Hacer tbody
+        $tbody_final .= str_replace('{{name}}','{{ d.'.$name.' }}',$tbody) . "\n";
+      }
+
+      # TR final del unico elemento en el thead con el título de las acciones
+      $thead_final .= "$actions_title \n</tr>";
+
+      # Añadir las acciones 
+      $tbody_final .= "$actions \n";
+      # TR final de cada elemento en el tbody
+      $tbody_final .= "</tr>\n{% endfor %}";
+
+      # Reemplazo final
+      $table = str_replace('{{thead}}',$thead_final,$table);
+      $table = str_replace('{{tbody}}',$tbody_final,$table);
+
+      return $table;
+    }
+
+    /**
       * Crea el contenido de una vista de formulario.
       *
       * @param bool $is_crud: Utilizado para saber si se llama desde un crud
       * @param bool $edit: En caso de que sea desde un crud, se usa para definir los {{value}} automáticos
       * 
-      * @return string con el contenido
+      * @return string con el contenido del formulario
     */
     private function createViewFormContent(bool $is_crud, bool $edit = false) : string {
       # Obtener formato para inputs
@@ -142,11 +197,16 @@ final class Generator {
       # Verificar si hay campos para una base de datos
       if($this->modules['database']) {
         # Desde la edición
-        if($edit) {
-          $form = str_replace('{{ajax_file_name}}','editar',$form);
+        if($is_crud) {
+          if($edit) {
+            $form = str_replace('{{ajax_file_name}}','editar',$form);
+          } else {
+            $form = str_replace('{{ajax_file_name}}','crear',$form);
+          }
         } else {
-          $form = str_replace('{{ajax_file_name}}','crear',$form);
+          $form = str_replace('{{ajax_file_name}}',$this->name['view'],$form);
         }
+        
         # Conjunto de inputs
         $final_inputs = "\n";
         # Reemplazar inputs
@@ -167,6 +227,7 @@ final class Generator {
           # Desde la edición
           if($edit) {
             $field_input = str_replace('{{value}}','{{ data.'.$name.' }}',$field_input);
+          # Desde la creación o sin crud
           } else {
             $field_input = str_replace('{{value}}','',$field_input);
           }
@@ -189,7 +250,7 @@ final class Generator {
         $inputs = str_replace('{{type_input}}','text',$inputs);
         $inputs = str_replace('{{value}}','',$inputs);
         $inputs = str_replace('{{name}}','ejemplo',$inputs);
-        $inputs = str_replace('{{label}}','Campo de ejemplo',$inputs);
+        $inputs = str_replace('{{label}}','Campo De Ejemplo',$inputs);
         # Reemplazo final
         $form = str_replace('{{inputs}}',$inputs,$form);        
       }
@@ -227,6 +288,12 @@ final class Generator {
         # Crear la vista EDICIÓN
         $this->writeFile($ruta . 'editar.twig',$form);
         $this->writeLn('Se ha creado el fichero ' . $ruta . 'editar.twig');
+
+        # Obtener la vista LISTADO
+        $table = $this->createViewTableContent();
+        # Crear la vista LISTADO
+        $this->writeFile($ruta . $this->name['view'] .'.twig',$table);
+        $this->writeLn('Se ha creado el fichero ' . $ruta . $this->name['view'] .'.twig');
       }
       # Si hay un modelo y una petición ajax, vista form.twig
       else if($this->modules['model'] && ($this->modules['ajax'] || null !== $this->modules['api'])) {
