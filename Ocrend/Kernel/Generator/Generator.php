@@ -239,8 +239,17 @@ final class Generator {
           # Añadir el input al formulario
           $final_inputs .= "$field_input\n\n";
         }
+        
         # Reemplazo final
         $form = str_replace('{{inputs}}',$final_inputs,$form);    
+
+        # Campo oculto
+        if($edit) {
+          $form = str_replace('{{hiddens}}',"<input type=\"hidden\" name=\"id_" . $this->table_name . "\" value=\"{{ data.id_" . $this->table_name . " }}\" />\n",$form);
+        } else {
+          $form = str_replace('{{hiddens}}','',$form);
+        }
+        
       }
       # Si no, es un formulario por defecto que tiene ajax 
       else {
@@ -252,6 +261,8 @@ final class Generator {
         $inputs = str_replace('{{name}}','ejemplo',$inputs);
         $inputs = str_replace('{{label}}','Campo De Ejemplo',$inputs);
         # Reemplazo final
+        $form = str_replace('{{hiddens}}','',$form);
+        # Campo oculto
         $form = str_replace('{{inputs}}',$inputs,$form);        
       }
 
