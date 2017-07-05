@@ -29,7 +29,7 @@ site:
   name: Ocrend Framework 2
   author: Brayan Narváez
   author_email: prinick@ocrend.com
-  url: http://localhost/Framework/
+  url: http://localhost/Ocrend-Framework/
   router:
-    path: localhost/Framework/
+    path: localhost/Ocrend-Framework/
     protocol: http
