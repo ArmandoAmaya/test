@@ -105,10 +105,20 @@ class Users extends Models implements ModelsInterface {
       *              false: Cuando el inicio de sesión no es correcto
     */
     private function authentication(string $email,string $pass) : bool {
+        global $session;
+
         $email = $this->db->scape($email);
         $query = $this->db->select('id_user,pass','users',"email='$email'",'LIMIT 1');
-    
+        
+        # Incio de sesión con éxito
         if(false !== $query && Strings::chash($query[0]['pass'],$pass)) {
+
+            # Restaurar intentos
+            $this->recentAttempts[$email]['attempts'] = 0;
+            $this->recentAttempts[$email]['time'] = null;
+            $session->set('login_user_recentAttempts', $this->recentAttempts);
+
+            # Generar la sesión
             $this->generateSession($query[0]);
             return true;
         }
@@ -161,19 +171,24 @@ class Users extends Models implements ModelsInterface {
 
         if($this->recentAttempts[$email]['attempts'] >= self::MAX_ATTEMPTS) {
             
+            # Colocar timestamp para recuperar más adelante la posibilidad de acceso
             if(null == $this->recentAttempts[$email]['time']) {
                 $this->recentAttempts[$email]['time'] = time() + self::MAX_ATTEMPTS_TIME;
             }
             
             if(time() < $this->recentAttempts[$email]['time']) {
-                throw new ModelsException('Ya ha superado el número máximo de intentos.');
+                # Setear sesión
+                $session->set('login_user_recentAttempts', $this->recentAttempts);
+                # Lanzar excepción
+                throw new ModelsException($this->lang['model']['errors']['max_attempts']);
             } else {
+                # Reiniciar intentos
                 $this->recentAttempts[$email]['attempts'] = 0;
                 $this->recentAttempts[$email]['time'] = null;
+                # Setear sesión
+                $session->set('login_user_recentAttempts', $this->recentAttempts);
             }
         }
-
-        $session->set('login_user_recentAttempts', $this->recentAttempts);
     }
 
     /**
