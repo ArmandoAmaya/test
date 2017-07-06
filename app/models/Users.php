@@ -83,6 +83,28 @@ class Users extends Models implements ModelsInterface {
     }
 
     /**
+      * Restaura los intentos de un usuario al iniciar sesión
+      *
+      * @param string $email: Email del usuario a restaurar
+      *
+      * @throws ModelsException cuando hay un error de lógica utilizando este método
+      * @return void
+    */
+    private function restoreAttempts(string $email) {
+        global $session;
+        
+        if(array_key_exists($email,$this->recentAttempts)) {
+            $this->recentAttempts[$email]['attempts'] = 0;
+            $this->recentAttempts[$email]['time'] = null;
+
+            $session->set('login_user_recentAttempts', $this->recentAttempts);
+        } else {
+            throw new ModelsException('Error lógico');
+        }
+       
+    }
+
+    /**
       * Genera la sesión con el id del usuario que ha iniciado
       *
       * @param array $user_data: Arreglo con información de la base de datos, del usuario
@@ -105,8 +127,6 @@ class Users extends Models implements ModelsInterface {
       *              false: Cuando el inicio de sesión no es correcto
     */
     private function authentication(string $email,string $pass) : bool {
-        global $session;
-
         $email = $this->db->scape($email);
         $query = $this->db->select('id_user,pass','users',"email='$email'",'LIMIT 1');
         
@@ -114,9 +134,7 @@ class Users extends Models implements ModelsInterface {
         if(false !== $query && Strings::chash($query[0]['pass'],$pass)) {
 
             # Restaurar intentos
-            $this->recentAttempts[$email]['attempts'] = 0;
-            $this->recentAttempts[$email]['time'] = null;
-            $session->set('login_user_recentAttempts', $this->recentAttempts);
+            $this->restoreAttempts($email);
 
             # Generar la sesión
             $this->generateSession($query[0]);
@@ -180,13 +198,9 @@ class Users extends Models implements ModelsInterface {
                 # Setear sesión
                 $session->set('login_user_recentAttempts', $this->recentAttempts);
                 # Lanzar excepción
-                throw new ModelsException($this->lang['model']['errors']['max_attempts']);
+                throw new ModelsException('Ya ha superado el límite de intentos para iniciar sesión.');
             } else {
-                # Reiniciar intentos
-                $this->recentAttempts[$email]['attempts'] = 0;
-                $this->recentAttempts[$email]['time'] = null;
-                # Setear sesión
-                $session->set('login_user_recentAttempts', $this->recentAttempts);
+                $this->restoreAttempts($email);
             }
         }
     }
@@ -204,7 +218,7 @@ class Users extends Models implements ModelsInterface {
             $this->setDefaultAttempts();   
 
             # Obtener los datos $_POST
-            $email = $http->request->get('email');
+            $email = strtolower($http->request->get('email'));
             $pass = $http->request->get('pass');
 
             # Verificar que no están vacíos
