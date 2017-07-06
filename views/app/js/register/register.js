@@ -4,7 +4,6 @@
  * @param {*} e 
 */
 function register(e){
-  e.defaultPrevented;
   $.ajax({
     type : "POST",
     url : "api/register",
@@ -28,9 +27,11 @@ function register(e){
  * Events
  */
 $('#register').click(function(e) {
+  e.defaultPrevented;
   register(e);
 });
 $('#register_form').keypress(function(e) {
+    e.defaultPrevented;
     if(e.which == 13) {
         register(e);
     }

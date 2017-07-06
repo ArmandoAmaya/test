@@ -4,7 +4,6 @@
  * @param {*} e 
 */
 function login(e){
-  e.defaultPrevented;
   $.ajax({
     type : "POST",
     url : "api/login",
@@ -28,9 +27,11 @@ function login(e){
  * Events
  */
 $('#login').click(function(e) {
+  e.defaultPrevented;
   login(e);
 });
 $('#login_form').keypress(function(e) {
+    e.defaultPrevented;
     if(e.which == 13) {
         login(e);
     }

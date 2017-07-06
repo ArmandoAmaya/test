@@ -4,7 +4,6 @@
  * @param {*} e 
 */
 function lostpass(e){
-  e.defaultPrevented;
   $.ajax({
     type : "POST",
     url : "api/lostpass",
@@ -28,9 +27,11 @@ function lostpass(e){
  * Events
  */
 $('#lostpass').click(function(e) {
+  e.defaultPrevented;
   lostpass(e);
 });
 $('#lostpass_form').keypress(function(e) {
+  e.defaultPrevented;
     if(e.which == 13) {
         lostpass(e);
     }

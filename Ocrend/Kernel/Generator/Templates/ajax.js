@@ -28,9 +28,11 @@ function {{view}}(e){
  * Events
  */
 $('#{{view}}').click(function(e) {
+  e.defaultPrevented;
   {{view}}(e);
 });
 $('#{{view}}_form').keypress(function(e) {
+    e.defaultPrevented;
     if(e.which == 13) {
         {{view}}(e);
     }
