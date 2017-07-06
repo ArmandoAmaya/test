@@ -32,8 +32,8 @@ final class Router implements RouterInterface {
         'url', # Con forma para URL (letras,números y el caracter -)
         'integer', # Sólamente números enteros
         'integer_positive', # Solamente números enteros positivos
-        'float', # Sólamente números enteros
-        'float_positive' # Solamente números enteros positivos
+        'float', # Sólamente números flotantes
+        'float_positive' # Solamente números flotantes positivos
     ];
 
     /**

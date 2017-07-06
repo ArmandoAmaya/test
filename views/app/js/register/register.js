@@ -4,7 +4,7 @@
  * @param {*} e 
 */
 function register(e){
-  e.preventDefault();
+  e.defaultPrevented;
   $.ajax({
     type : "POST",
     url : "api/register",

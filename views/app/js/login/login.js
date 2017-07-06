@@ -4,7 +4,7 @@
  * @param {*} e 
 */
 function login(e){
-  e.preventDefault();
+  e.defaultPrevented;
   $.ajax({
     type : "POST",
     url : "api/login",

@@ -4,7 +4,7 @@
  * @param {*} e 
 */
 function {{view}}(e){
-  e.preventDefault();
+  e.defaultPrevented;
   $.ajax({
     type : "{{method}}",
     url : "api/{{rest}}",
