@@ -48,6 +48,17 @@ class Users extends Models implements ModelsInterface {
     */
     private $recentAttempts = array();
 
+     /**
+      * Hace un set() a la sesión login_user_recentAttempts con el valor actualizado.
+      *
+      * @return void
+    */
+    private function updateSessionAttempts() {
+        global $session;
+
+        $session->set('login_user_recentAttempts', $this->recentAttempts);
+    }
+
     /**
       * Genera la sesión con el id del usuario que ha iniciado
       *
@@ -96,8 +107,7 @@ class Users extends Models implements ModelsInterface {
         if(array_key_exists($email,$this->recentAttempts)) {
             $this->recentAttempts[$email]['attempts'] = 0;
             $this->recentAttempts[$email]['time'] = null;
-
-            $session->set('login_user_recentAttempts', $this->recentAttempts);
+            $this->updateSessionAttempts();
         } else {
             throw new ModelsException('Error lógico');
         }
@@ -173,6 +183,7 @@ class Users extends Models implements ModelsInterface {
         } 
 
         $this->recentAttempts[$email]['attempts']++;
+        $this->updateSessionAttempts();
     }
 
     /**
@@ -196,7 +207,7 @@ class Users extends Models implements ModelsInterface {
             
             if(time() < $this->recentAttempts[$email]['time']) {
                 # Setear sesión
-                $session->set('login_user_recentAttempts', $this->recentAttempts);
+                $this->updateSessionAttempts();
                 # Lanzar excepción
                 throw new ModelsException('Ya ha superado el límite de intentos para iniciar sesión.');
             } else {
