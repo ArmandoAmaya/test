@@ -101,9 +101,7 @@ class Users extends Models implements ModelsInterface {
       * @throws ModelsException cuando hay un error de lógica utilizando este método
       * @return void
     */
-    private function restoreAttempts(string $email) {
-        global $session;
-        
+    private function restoreAttempts(string $email) {       
         if(array_key_exists($email,$this->recentAttempts)) {
             $this->recentAttempts[$email]['attempts'] = 0;
             $this->recentAttempts[$email]['time'] = null;
@@ -196,8 +194,6 @@ class Users extends Models implements ModelsInterface {
       * @return void
     */
     private function maximumAttempts(string $email) {
-        global $session;
-
         if($this->recentAttempts[$email]['attempts'] >= self::MAX_ATTEMPTS) {
             
             # Colocar timestamp para recuperar más adelante la posibilidad de acceso
