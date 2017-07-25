@@ -285,8 +285,17 @@ use Ocrend\Kernel\Database\DatabaseException;
     *
     * @return false si no encuentra ningún resultado, array asociativo/numérico si consigue al menos uno
   */
-  final public function select(string $e, string $table, string $where = '1 = 1', string $limit = "") {
-    $sql = $this->query("SELECT $e FROM $table WHERE $where $limit;");
+  final public function select(string $e, string $table, string $where = '1 = 1', string $limit = "") {    
+    return $this->query_select("SELECT $e FROM $table WHERE $where $limit;");
+  }
+
+   /**
+    * Realiza una query, ideal para trabajar con SELECTS, JOINS, etc
+    *
+    * @return false si no encuentra ningún resultado, array asociativo/numérico si consigue al menos uno
+  */
+  final public function query_select(string $query) {
+    $sql = $this->query($query);
     $result = $sql->fetchAll();
     $sql->closeCursor();
 

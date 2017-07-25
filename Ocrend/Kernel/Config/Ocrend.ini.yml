@@ -30,6 +30,7 @@ site:
   author: Brayan Narváez
   author_email: prinick@ocrend.com
   url: http://localhost/Ocrend-Framework/
+  timezone: America/Caracas
   router:
     path: localhost/Ocrend-Framework/
     protocol: http
