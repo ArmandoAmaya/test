@@ -413,7 +413,7 @@ class Users extends Models implements ModelsInterface {
       * @return false|array con información del usuario
     */   
     public function getUserById(int $id, string $select = '*') {
-       return $this->db->select($select,'users',"id_user='$this->id'",'LIMIT 1');
+       return $this->db->select($select,'users',"id_user='$id'",'LIMIT 1');
     }
     
     /**
