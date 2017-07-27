@@ -57,7 +57,7 @@ $session->start();
 /**
   * Define el timezone actual, en Puerto Rico
 */
-date_default_timezone_get($config['site']['timezone']);
+date_default_timezone_set($config['site']['timezone']);
 
 /**
   * Capa orientada a objetos para reemplazar las peticiones Http $_GET, $_POST, $_FILES, $_COOKIES, $_SERVER
