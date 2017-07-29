@@ -437,8 +437,16 @@ class Users extends Models implements ModelsInterface {
     */
     public function getOwnerUser(string $select = '*') : array {
         try {
-            if(null != $this->id_user) {
-                return $this->db->select($select,'users',"id_user='$this->id_user'",'LIMIT 1')[0];
+            if(null != $this->id_user) {    
+               
+                $user = $this->db->select($select,'users',"id_user='$this->id_user'",'LIMIT 1');
+
+                # Si se borra al usuario desde la base de datos y sigue con la sesión activa
+                if(false == $user) {
+                    $this->logout();
+                }
+
+                return $user[0];
             } 
            
             throw new ModelsException('El usuario no está logeado.');

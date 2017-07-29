@@ -191,9 +191,7 @@ use Ocrend\Kernel\Database\DatabaseException;
     } catch (\Exception $pdo) {
         $message = 'Error en la query ' . $q . ' :: ' . $pdo->getMessage();
 
-        if(defined('API_INTERFACE') && API_INTERFACE === '../') {
-           die(json_encode(array('success' => 0, 'message' => $message)));
-        } else if(defined('GENERATOR')) {
+        if(defined('GENERATOR')) {
            die("\n" . str_replace('::',"\n\n",$message));
         }
 
