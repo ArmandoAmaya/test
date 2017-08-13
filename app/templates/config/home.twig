@@ -41,8 +41,8 @@
             <tbody>
               {% for s in sliders %}
               <tr>
-                <td><img class="w-200" src="../{{s.file}}"></td>
-                <td style="width:10%!important;">
+                <td style="vertical-align: middle;"><img class="w-200" src="../{{s.file}}"></td>
+                <td class="actions" style="width: 10%!important;vertical-align:middle;">
                     <a href="" data-target="#edit_slider_{{s.id_home_slider}}" data-toggle="modal" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
                     <a onclick="delete_slider('{{s.file}}', {{s.id_home_slider}})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
                 </td> 

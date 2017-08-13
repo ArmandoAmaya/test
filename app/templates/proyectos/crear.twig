@@ -109,12 +109,7 @@
                 </div>
               </div>
               <div class="tab-pane" id="exampleTopComponents" role="tabpanel">
-                <div class="row justify-content-md-center">
-                  <form action="api/upload/tmp" enctype="multipart/form-data" class="dropzone dropzone-file-area col-md-12 col-xl-7 text-center" id="my-dropzone" >
-                    <input type="hidden" name="tmp_dir" id="tmp_dir" value="{{ tmp }}" />
-                    <h3 class="sbold" style="color: #646C7F;">Arrastrar las imágenes aquí</h3>
-                  </form>
-                </div>
+                {% include 'overall/uploader' with {'tmp': tmp} only %}
                
               </div>
             </div>

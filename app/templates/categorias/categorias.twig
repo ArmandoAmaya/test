@@ -41,9 +41,9 @@
             <tbody>
               {% for d in data if false != data %}
               <tr>
-                <td>{{ d.name_es }}</td>
-                <td>{{ d.name_en }}</td>
-                <td>
+                <td style="vertical-align: middle;">{{ d.name_es }}</td>
+                <td style="vertical-align: middle;">{{ d.name_en }}</td>
+                <td class="actions" style="width: 10%!important;vertical-align:middle;">
                     <a href="categorias/editar/{{ d.id_categorias }}" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
                     <a onclick="deleteModal('categorias',{{ d.id_categorias }})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
                 </td> 

@@ -1,10 +1,158 @@
 {% extends 'overall/layout' %}
 
+{% block appHeader %}
+<link rel="stylesheet" href="views/theme/assets/examples/css/widgets/statistics.css">
+<link rel="stylesheet" href="views/theme/global/vendor/gauge-js/gauge.css"
+{% endblock %}
+
 {% block appBody %}
 <div class="page">
     <div class="page-content">
-        <h2>Página en blanco</h2>
-        <p>Contenido de la página...</p>
+        <h2>Escritorio</h2>
+        <div class="row">
+        	<div class="col-xxl-3 col-md-6">
+	            <div class="card">
+	                <div class="card-block p-35 clearfix">
+		                <div class="float-left white">
+		                    <i class="icon icon-circle icon-2x wb-folder bg-red-600" aria-hidden="true"></i>
+		                </div>
+		                <div class="counter counter-md counter text-right float-right">
+		                    <div class="counter-number-group">
+		                      	<span class="counter-number">{{ false != projects ? projects|length : '0' }}</span>
+		                      	<span class="counter-number-related text-capitalize">Proyectos</span>
+		                    </div>
+		                    <div class="counter-label text-capitalize font-size-16"><a href="projects/">Ver todos</a></div>
+		                </div>
+	                </div>
+	            </div>
+            </div>
+
+            <div class="col-xxl-3 col-md-6">
+	            <div class="card">
+	                <div class="card-block p-35 clearfix">
+		                <div class="float-left white">
+		                    <i class="icon icon-circle icon-2x wb-users bg-blue-600" aria-hidden="true"></i>
+		                </div>
+		                <div class="counter counter-md counter text-right float-right">
+		                    <div class="counter-number-group">
+		                      	<span class="counter-number">{{ false != count_admins ? count_admins[0][0] : '0' }}</span>
+		                      	<span class="counter-number-related text-capitalize">Admins</span>
+		                    </div>
+		                    <div class="counter-label text-capitalize font-size-16"><a href="admins/">Ver todos</a></div>
+		                </div>
+	                </div>
+	            </div>
+            </div>
+
+            <div class="col-xxl-3 col-md-6">
+	            <div class="card">
+	                <div class="card-block p-35 clearfix">
+		                <div class="float-left white">
+		                    <i class="icon icon-circle icon-2x wb-tag bg-green-600" aria-hidden="true"></i>
+		                </div>
+		                <div class="counter counter-md counter text-right float-right">
+		                    <div class="counter-number-group">
+		                      	<span class="counter-number">{{ false != count_categories ? count_categories[0][0] : '0' }}</span>
+		                      	<span class="counter-number-related text-capitalize">Categorías</span>
+		                    </div>
+		                    <div class="counter-label text-capitalize font-size-16"><a href="categorias/">Ver todos</a></div>
+		                </div>
+	                </div>
+	            </div>
+            </div>
+
+            <div class="col-xxl-3 col-md-6">
+	            <div class="card">
+	                <div class="card-block p-35 clearfix">
+		                <div class="float-left white">
+		                    <i class="icon icon-circle icon-2x wb-home bg-purple-600" aria-hidden="true"></i>
+		                </div>
+		                <div class="counter counter-md counter text-right float-right">
+		                    <div class="counter-number-group">
+		                      	<span class="counter-number">{{ false != count_home ? count_home[0][0] : '0' }}</span>
+		                      	<span class="counter-number-related text-capitalize">Homepage</span>
+		                    </div>
+		                    <div class="counter-label text-capitalize font-size-16"><a href="config/home/">Ver todos</a></div>
+		                </div>
+	                </div>
+	            </div>
+            </div>
+
+            <div class="col-lg-8" id="ecommerceRecentOrder">
+		        <div class="card card-shadow table-row">
+		            <div class="card-header card-header-transparent py-20">
+		              <div class="btn-group dropdown">
+		                <a href="#" class="text-body dropdown-toggle blue-grey-700" data-toggle="dropdown">PROYECTOS</a>
+		                <div class="dropdown-menu animate" role="menu">
+		                  <a class="dropdown-item" href="proyectos/" role="menuitem">Ver todos</a>
+		                </div>
+		              </div>
+		            </div>
+		            <div class="card-block bg-white table-responsive">
+
+		            	{% if false != projects %}
+						<table class="table">
+			                <thead>
+				                <tr>
+				                    <th>Portada</th>
+				                    <th>Logo</th>
+				                    <th>Título</th>
+				                    <th>Descripción corta(es)</th>
+				                    <th>Descripción corta(en)</th>
+				                    <th>Acción</th>
+				                </tr>
+			                </thead>
+			                <tbody>
+								{% for p in projects %}
+								<tr>
+				                    <td style="vertical-align: middle;">
+				                      <img style="width:80px;" src="../{{ p.portada }}"  />
+				                    </td>
+				                    <td style="vertical-align: middle;">
+				                      <img style="width:80px;" src="../{{ p.logo }}"  />
+				                    </td>
+				                    <td style="vertical-align: middle;">{{ p.titulo }}</td>
+				                    <td style="vertical-align: middle;">{{ p.short_desc_es }}</td>
+				                    <td style="vertical-align: middle;">{{ p.short_desc_en }}</td>
+				                    <td style="vertical-align: middle;"><a href="{{ config.site.frontend }}projects/{{p.id_proyectos}}/{{ url_amigable(p.titulo) }}/" class="btn btn-primary" target="_blank"><i class="wb-eye icon"></i> frontend</a></td>
+				                </tr> 
+								{% endfor %}
+				                
+			                 
+			                </tbody>
+			            </table>
+			            {% else %}
+			            <div class="alert alert-info">
+			            	<strong><i class="icon wb-info-circle"></i> Información: </strong> no hay proyectos registrados.
+			            </div>
+		            	{% endif %}
+		              
+		            </div>
+		        </div>
+	        </div>
+
+	        <div class="col-lg-4" id="ecommerceRecentOrder">
+		        <div class="card card-shadow table-row">
+		            <div class="card-block bg-white table-responsive">
+		            	<h2 class="example-title text-center">Visitas</h2>
+		            	<h5 class="text-center my-20">Seguimiento de visita de hoy {{ 'now'|date('d-m-Y') }}</h5>
+		            	<p class="my-20 text-center">Número de visitas de personas que visitaron el sitio web el dia de hoy</p>
+		            	<div class="gauge gauge-lg" data-plugin="gauge" data-value="{{ visitas[0][0] }}" data-max-value="100000">
+		                  	<div class="gauge-label"></div>
+		                  	<canvas width="300" height="220"></canvas>
+		                </div>
+		            </div>
+		        </div>
+	        </div>
+
+
+        </div>
     </div>
 </div>
+{% endblock %}
+{% block appFooter %}
+<script src="views/theme/global/vendor/gauge-js/gauge.min.js"></script>
+<script src="views/theme/global/js/Plugin/gauge.js"></script>
+<script src="views/theme/global/js/Plugin/donut.js"></script>
+<script src="views/theme/assets/examples/js/charts/gauges.js"></script
 {% endblock %}

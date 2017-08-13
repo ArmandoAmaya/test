@@ -21,11 +21,11 @@ function proyectos(e){
   _data.append('id_categoria', $('#id_categoria').val());
   _data.append('short_desc_es', $('#id_short_desc_es').val());
   _data.append('short_desc_en', $('#id_short_desc_en').val());
-  _data.append('content_es', $('#id_content_es').val());
-  _data.append('content_en', $('#id_content_en').val());
+  _data.append('content_es', $('#id_content_es').html());
+  _data.append('content_en', $('#id_content_en').html());
   _data.append('portada', portada);
   _data.append('logo', logo);
-    
+
   e.defaultPrevented;
   $.ajax({
     type : "POST",

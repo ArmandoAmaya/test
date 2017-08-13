@@ -48,7 +48,6 @@ class proyectosController extends Controllers implements ControllersInterface {
               echo $this->template->render('proyectos/editar', array(
                 'data' => $data[0],
                 'categorias' => $p->getCategories(),
-                'cat_comp' => $p->categories_convert_array($data[0]['categorias']),
                 'gallery' => $p->getGallery(),
                 'tmp' => $p->createTmpDir()
               ));

@@ -14,16 +14,16 @@
 {% block appBody %}
   <div class="page">
     <div class="page-header">
-      <h1 class="page-title">Crear proyectos</h1>
+      <h1 class="page-title">Editar proyectos</h1>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="proyectos/">proyectos</a></li>
-        <li class="breadcrumb-item active">Crear</li>
+        <li class="breadcrumb-item active">Editar</li>
       </ol>
     </div>
     <div class="page-content">
       <div class="panel nav-tabs-horizontal">
         <div class="panel-heading">
-          <h3 class="panel-title">proyectos - Creación</h3>
+          <h3 class="panel-title">proyectos - Edición</h3>
         </div>
         <ul class="nav nav-tabs nav-tabs-line" role="tablist">
           <li class="nav-item">
@@ -52,10 +52,11 @@
 
                             <div class="form-group col-xs-12 col-sm-12 col-md-6">
                                 <label class="form-control-label" for="id_categoria"> Categoría <span class="required">*</span></label>
-                                <select class="form-control" id="id_categoria" name="id_categoria[]" multiple data-plugin="select2" data-placeholder="Selecciona una categoría">
+                                <select class="form-control select2" id="id_categoria" name="id_categoria[]" multiple data-plugin="select2" data-placeholder="Selecciona una categoría">
                                   <optgroup label="Seleccionar categoría">
+                                    {% set cat_comp = json_decode(data.categorias) %}
                                     {% for i,c in categorias if 0 != categorias|length %}
-                                    <option {% if i in cat_comp|keys %}selected{% endif %} value="{{ i }}">{{ c }}</option>
+                                    <option {% if i in cat_comp %}selected{% endif %} value="{{ i }}">{{ c }}</option>
                                     {% endfor %}
                                     
                                   </optgroup>
@@ -74,16 +75,20 @@
 
                             
 
-                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group col-xs-12 col-sm-12 col-md-12">
                                 <label class="form-control-label" for="id_content_es">Contenido en español <span class="required">*</span></label>
-                                <div class="summernote" data-plugin="summernote">{{ data.content_es|raw }}</div>
-                                <input type="hidden" name="content_es" id="id_content_es" value="{{ data.content_es|raw }}">
+                                <div class="summernote">{{ data.content_es|raw }}</div>
+                                <span class="d-none" id="id_content_es"  data-content="true">
+                                  {{ data.content_es|raw }}
+                                </span>
                             </div>
 
-                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group col-xs-12 col-sm-12 col-md-12">
                                 <label class="form-control-label" for="id_content_en">Contenido en ingles <span class="required">*</span></label>
-                                <div class="summernote" data-plugin="summernote">{{ data.content_en|raw }}</div>
-                                <input type="hidden" name="content_en" id="id_content_en" value="{{ data.content_en|raw }}">
+                                <div class="summernote">{{ data.content_en|raw }}</div>
+                                <span class="d-none" id="id_content_en" data-content="true">
+                                  {{ data.content_es|raw }}
+                                </span>
                             </div>
 
 
@@ -145,12 +150,7 @@
                   </tbody>
                 </table>
 
-                <div class="row justify-content-md-center">
-                  <form action="api/upload/tmp" enctype="multipart/form-data" class="dropzone dropzone-file-area col-md-12 col-xl-7 text-center" id="my-dropzone" >
-                    <input type="hidden" name="tmp_dir" id="tmp_dir" value="{{ tmp }}" />
-                    <h3 class="sbold" style="color: #646C7F;">Arrastrar las imágenes aquí</h3>
-                  </form>
-                </div>
+                {% include 'overall/uploader' with {'tmp': tmp} only %}
                
               </div>
             </div>

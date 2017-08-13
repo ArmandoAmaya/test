@@ -68,7 +68,7 @@
       height: 300,
       callbacks: {
         onChange: function(contents, $editable) {
-          $(this).parent().children('input[type=hidden]').val(contents);
+          $(this).parent().children('span[data-content=true]').html(contents);
         }
       }
     });

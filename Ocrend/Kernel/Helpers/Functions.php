@@ -176,6 +176,20 @@ final class Functions extends \Twig_Extension {
        return str_replace(array_keys($cambios),array_values($cambios),$date);
      }
 
+     //------------------------------------------------
+
+    /**
+      * Decodifica un JSON convirtiendolo en array
+      *
+      * @param string $json: json a decodificar
+      *
+      * @return array con los datos del json
+    */
+
+    public function json_decode(string $json) : array {
+      return json_decode($json,true);
+    }
+
    //------------------------------------------------
 
   /**
@@ -216,6 +230,7 @@ final class Functions extends \Twig_Extension {
        new \Twig_Function('e_dynamic', array($this, 'e')),
        new \Twig_Function('all_full', array($this, 'all_full')),
        new \Twig_Function('fecha', array($this, 'fecha')),
+       new \Twig_Function('json_decode',array($this, 'json_decode')),
        new \Twig_Function('base_assets',array($this, 'base_assets'))
      );
    }

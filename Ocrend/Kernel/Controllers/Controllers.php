@@ -13,7 +13,7 @@ namespace Ocrend\Kernel\Controllers;
 
 use app\models as Model;
 use Ocrend\Kernel\Router\RouterInterface;
-use Ocrend\Kernel\Helpers\Functions;
+use Ocrend\Kernel\Helpers\{Functions, Strings};
 
 /**
  * Clase para conectar todos los controladores del sistema y compartir la configuración.
@@ -96,6 +96,8 @@ abstract class Controllers {
         $this->template->addGlobal('session', $session->all());
         $this->template->addGlobal('config', $config);
         $this->template->addExtension($this->functions);
+        $this->template->addExtension(new Strings);
+        $this->template->addExtension(new \Twig_Extension_Debug());
 
         # Request globales cuando la sesión está iniciada
         if(null !== $session->get('user_id')) {

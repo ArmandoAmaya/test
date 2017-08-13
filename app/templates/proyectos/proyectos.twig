@@ -29,7 +29,6 @@
               	<th>Título</th>
               	<th>Descripción corta(es)</th>
                 <th>Descripción corta(en)</th>
-                <th>Categorias</th>
                 <th>Portada</th>
                 <th>Logo</th>
                 <th>Acciones</th> 
@@ -40,7 +39,6 @@
               	<th>Título</th>
               	<th>Descripción corta(es)</th>
                 <th>Descripción corta(en)</th>
-                <th>Categorias</th>
                 <th>Portada</th>
                 <th>Logo</th>
                 <th>Acciones</th> 
@@ -49,18 +47,13 @@
             <tbody>
               {% for d in data if false != data %}
               <tr>
-                <td>{{ d.titulo }}</td>
-                <td>{{ d.short_desc_es }}</td>
-                <td>{{ d.short_desc_en }}</td>
-                <td>
-                {% for c in d.categorias %}
-                  <div class="badge badge-outline badge-primary">{{ c.name_es }}</div>
-                {% endfor %}
-                </td>
-                <td><img class="w-50 h-50" src="../{{d.portada}}"></td>
-                <td><img class="w-50 h-50" src="../{{d.logo}}"></td>
+                <td style="vertical-align: middle;">{{ d.titulo }}</td>
+                <td style="vertical-align: middle;">{{ d.short_desc_es }}</td>
+                <td style="vertical-align: middle;">{{ d.short_desc_en }}</td>
+                <td style="vertical-align: middle;"><img class="w-50 h-50" src="../{{d.portada}}"></td>
+                <td style="vertical-align: middle;"><img class="w-50 h-50" src="../{{d.logo}}"></td>
                 
-                <td>
+                <td class="actions" style="width: 10%!important;vertical-align:middle;">
                   <a href="proyectos/editar/{{ d.id_proyectos }}" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
                   <a onclick="deleteModal('proyectos',{{ d.id_proyectos }})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
                 </td> 

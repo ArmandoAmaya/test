@@ -28,7 +28,16 @@ class dashboardController extends Controllers implements ControllersInterface {
         parent::__construct($router,array(
         	'users_logged' => true
         ));   
-        echo $this->template->render('dashboard/dashboard');
+
+        $d = new Model\Dashboard;
+        
+        echo $this->template->render('dashboard/dashboard',array(
+        	'count_admins' => $d->getEntity('count(id_user)', 'users'),
+        	'count_categories' => $d->getEntity('count(id_categorias)', 'categorias'),
+        	'projects' => $d->getEntity('id_proyectos,titulo,short_desc_es,short_desc_en,portada,logo', 'proyectos', '1=1 ORDER BY id_proyectos DESC', 'LIMIT 4'),
+        	'count_home' => $d->getEntity('count(id_home_slider)', 'home_sliders'),
+            'visitas' => $d->getEntity('contador', 'visitas', "id_visita = '1'", 'LIMIT 1')
+        ));
     }
 
 }

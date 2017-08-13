@@ -134,7 +134,6 @@ class Proyectos extends Models implements ModelsInterface {
       $this->portada = $http->files->get('portada');
       $this->logo = $http->files->get('logo');
 
-
       if ($edit) {
         $where = "AND id_proyectos <> '$this->id'";
       }else{
@@ -216,6 +215,7 @@ class Proyectos extends Models implements ModelsInterface {
           'short_desc_en' => $this->short_desc_en,
 					'content_es' => $this->content_es,
 					'content_en' => $this->content_en,
+          'categorias' => json_encode($this->categorias)
         ));
 
         # Obtenemos el último id
@@ -234,15 +234,7 @@ class Proyectos extends Models implements ModelsInterface {
           'logo' => $this->logo
         ), "id_proyectos = '$this->id'", 'LIMIT 1');
 
-        # Insertamos las categorías
-        if (sizeof($this->categorias) > 1) {
-          foreach ($this->categorias as $c) {
-            $this->db->insert('categoria_proyecto', ['id_categoria' => $c, 'id_proyecto' => $this->id ]);
-          }
-        }else{
-          $this->db->insert('categoria_proyecto', ['id_categoria' => $this->categorias[0], 'id_proyecto' => $this->id ]);
-        }
-
+        
         return array('success' => 1, 'message' => 'Proyecto creado exitosamente.');
       } catch(ModelsException $e) {
         return array('success' => 0, 'message' => $e->getMessage());
@@ -263,7 +255,6 @@ class Proyectos extends Models implements ModelsInterface {
                   
         # Controlar errores de entrada en el formulario
         $this->errors(true);
-
         # Elementos a actuaizar
         $a = array(
           'titulo' => $this->titulo,
@@ -271,6 +262,7 @@ class Proyectos extends Models implements ModelsInterface {
           'short_desc_en' => $this->short_desc_en,
           'content_es' => $this->content_es,
           'content_en' => $this->content_en,
+          'categorias' => json_encode($this->categorias)
         );
 
         # Si existen nuevos archivos temporales
@@ -334,56 +326,10 @@ class Proyectos extends Models implements ModelsInterface {
       *                      array con los datos.
     */
     final public function get(bool $multi = true) {
-      # En caso de traer todos los proyectos
       if ($multi) {
-        $where = '1=1';
-        $limit = '';
-      }else{
-      # En caso de traer un solo proyecto
-        $where = "id_proyectos = '$this->id'";
-        $limit = 'LIMIT 1';
+        return $this->db->select('*', 'proyectos');
       }
-      # Traemos los proyectos
-      $proj = $this->db->select('*','proyectos', $where, $limit);
-      # Si no hay resultamos retornamos false
-      if (false == $proj) {
-        return false;
-      }
-      # Preparamos la consulta
-      $prepare = $this->db->prepare("SELECT c.id_categorias,c.name_es FROM categoria_proyecto cp INNER JOIN categorias c ON cp.id_categoria = c.id_categorias WHERE cp.id_proyecto = ?");
-
-      # Recorremos los proyectos
-      foreach ($proj as $p) {
-        # Ejecutamos la consulta preparada
-        $prepare->execute(array($p['id_proyectos']));
-        # Convertimos los datos en array
-        $result = $prepare->fetchAll();
-
-        # Creamos el nuevo array con los datos
-        $real_proj[] = array(
-          'id_proyectos' => $p['id_proyectos'],
-          'titulo' => $p['titulo'],
-          'short_desc_es' => $p['short_desc_es'],
-          'short_desc_en' => $p['short_desc_en'],
-          'content_es' => $p['content_es'],
-          'content_en' => $p['content_en'],
-          'portada' => $p['portada'],
-          'logo' => $p['logo'],
-          'categorias' => $result
-        );
-      }
-      return $real_proj;
-
-    }
-
-    /**
-     * Convierte las categorías array asoativo con el formato ['id' => 'categoria']
-     * @param array $categories - array con las categorias
-     * @return categorias convertidas
-     */
-
-    final public function categories_convert_array(array $categories) : array {
-      return $this->select_array($categories, 'id_categorias', 'name_es');
+      return $this->db->select('*', 'proyectos', "id_proyectos = '$this->id'", 'LIMIT 1');
     }
 
     /**
@@ -626,5 +572,4 @@ class Proyectos extends Models implements ModelsInterface {
         parent::__destruct();
     }
 }
-
 

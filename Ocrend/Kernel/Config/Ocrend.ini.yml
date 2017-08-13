@@ -17,7 +17,7 @@ phpmailer:
 
 # Configuración de sesiones
 sessions:
-  life_time: 3600 
+  life_time: 86400 
 
 # Variables del framework
 framework:
