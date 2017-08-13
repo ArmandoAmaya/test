@@ -1,18 +1,18 @@
 # Conexión con la base de datos principal
-database:
+database: 
   host: localhost
   user: root
   pass: 
-  name: ocrend
+  name: emergente
   port: 1521
   protocol: TCP
   motor: mysql
   
 # Configuración de servidor SMTP
 phpmailer:
-  host: 
-  user: 
-  pass: 
+  host: p3plcpnl0173.prod.phx3.secureserver.net
+  user: dev@ocrend.com
+  pass: Devocrend++
   port: 465
 
 # Configuración de sesiones
@@ -26,11 +26,12 @@ framework:
 
 # Configuración del sitio
 site:
-  name: Ocrend Framework 2
-  author: Brayan Narváez
+  name: Emergente-Admin
+  author: DevSystemVzla
   author_email: prinick@ocrend.com
-  url: http://localhost/Ocrend-Framework/
+  url: http://localhost/emergente/emergente-admin/
   timezone: America/Caracas
+  frontend: http://localhost/emergente/
   router:
-    path: localhost/Ocrend-Framework/
+    path: localhost/emergente/emergente-admin/
     protocol: http

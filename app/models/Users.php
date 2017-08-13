@@ -48,11 +48,20 @@ class Users extends Models implements ModelsInterface {
     */
     private $recentAttempts = array();
 
+    /**
+      * Directorio de subida de archivos de avatares
+      * {{id_user}} representa el id del usuario
+      * 
+      * @var int
+    */
+    const AVATARS_DIR = '../views/app/images/avatars/{{id_user}}/';
+
      /**
       * Hace un set() a la sesión login_user_recentAttempts con el valor actualizado.
       *
       * @return void
     */
+
     private function updateSessionAttempts() {
         global $session;
 
@@ -454,6 +463,19 @@ class Users extends Models implements ModelsInterface {
         } catch(ModelsException $e) {
             $e->errorResponse();
         }
+    }
+    public function getUserImage(string $image_name) : string{
+        # Directorio real
+        $dir = str_replace('{{id_user}}',$this->id_user,self::AVATARS_DIR);
+
+        # Verificar si existe 
+        if(!$this->functions->emp($image_name)) {
+
+            return str_replace('../','',$dir . $image_name);
+        }
+
+        # Si no existe, retornar por defecto
+        return 'views/app/images/default_avatar.png';
     }
 
     /**

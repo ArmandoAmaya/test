@@ -90,11 +90,19 @@ abstract class Controllers {
         )); 
         
         # Request global
+        $this->template->addGlobal('controller', $router->getController());
         $this->template->addGlobal('get', $http->query->all());
         $this->template->addGlobal('server', $http->server->all());
         $this->template->addGlobal('session', $session->all());
         $this->template->addGlobal('config', $config);
         $this->template->addExtension($this->functions);
+
+        # Request globales cuando la sesión está iniciada
+        if(null !== $session->get('user_id')) {
+          $this->user = new Model\Users;
+          $this->template->addGlobal('owner_user', $this->user->getOwnerUser());
+          $this->template->addGlobal('owner_user_avatar', $this->user->getUserImage($this->user->getOwnerUser()['avatar']) );
+        }
 
         # Verificar para quién está permitido este controlador
         $this->knowVisitorPermissions();
@@ -141,14 +149,14 @@ abstract class Controllers {
       * @return void
     */
     private function knowVisitorPermissions() {
-      global $session;
+      global $session,$config;
 
       # Estado del visitante, ¿es un usuario logeado?
       $is_logged = null != $session->get('user_id');
 
       # Sólamente usuarios logeados
       if($this->controllerConfig['users_logged'] && !$is_logged) {
-        $this->functions->redir();
+        $this->functions->redir($config['site']['url'].'login/');
       }
 
       # Sólamente usuarios no logeados

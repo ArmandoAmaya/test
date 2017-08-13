@@ -1,0 +1,183 @@
+{% extends 'overall/layout' %}
+
+{% block appHeader %}
+<link rel="stylesheet" href="views/theme/global/vendor/dropify/dropify.css">
+<link rel="stylesheet" href="views/theme/global/vendor/summernote/summernote.css">
+<link rel="stylesheet" href="views/theme/global/vendor/select2/select2.css">
+<link href="views/app/js/dropzone/dropzone.css" rel="stylesheet" type="text/css" />
+<link href="views/app/js/dropzone/basic.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.css">
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-responsive/dataTables.responsive.css">
+<link rel="stylesheet" href="views/theme/assets/examples/css/tables/datatable.css">
+{% endblock %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Crear proyectos</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="proyectos/">proyectos</a></li>
+        <li class="breadcrumb-item active">Crear</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel nav-tabs-horizontal">
+        <div class="panel-heading">
+          <h3 class="panel-title">proyectos - Creación</h3>
+        </div>
+        <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#exampleTopHome" aria-controls="exampleTopHome" role="tab" aria-expanded="true"><i class="icon wb-info-circle" aria-hidden="true"></i>Datos del proyecto</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#exampleTopComponents" aria-controls="exampleTopComponents" role="tab"><i class="icon wb-gallery" aria-hidden="true"></i>Galería de imágenes</a></li>
+        </ul>
+        <div class="panel-body container-fluid">
+          
+          <div class="tab-content">
+              <div class="tab-pane active" id="exampleTopHome" role="tabpanel">
+                <div class="row row-lg">
+                  <div class="col-md-12">
+                    <div class="example-wrap">
+                      <div class="example">
+                        <form autocomplete="off" id="proyectos_form" enctype="multipart/form-data">
+
+                          <input type="hidden" name="id_proyectos" id="id_proyectos" value="{{ data.id_proyectos }}" />
+
+                          <div class="row justify-content-md-center">                      
+                            
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_titulo">Título del proyecto <span class="required">*</span></label>
+                                <input class="form-control" type="text" name="titulo" id="id_titulo" value="{{data.titulo}}" placeholder="Título del proyecto" />
+                            </div>
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_categoria"> Categoría <span class="required">*</span></label>
+                                <select class="form-control" id="id_categoria" name="id_categoria[]" multiple data-plugin="select2" data-placeholder="Selecciona una categoría">
+                                  <optgroup label="Seleccionar categoría">
+                                    {% for i,c in categorias if 0 != categorias|length %}
+                                    <option {% if i in cat_comp|keys %}selected{% endif %} value="{{ i }}">{{ c }}</option>
+                                    {% endfor %}
+                                    
+                                  </optgroup>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_short_desc_es">Descripción corta - español <span class="required">*</span></label>
+                                <input class="form-control" type="text" name="short_desc_es" id="id_short_desc_es" value="{{ data.short_desc_es }}" placeholder="Descripción corta en español" />
+                            </div>
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_short_desc_en">Descripción corta - ingles <span class="required">*</span></label>
+                                <input class="form-control" type="text" name="short_desc_en" id="id_short_desc_en" value="{{ data.short_desc_en }}" placeholder="Descripción corta en ingles" />
+                            </div>
+
+                            
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_content_es">Contenido en español <span class="required">*</span></label>
+                                <div class="summernote" data-plugin="summernote">{{ data.content_es|raw }}</div>
+                                <input type="hidden" name="content_es" id="id_content_es" value="{{ data.content_es|raw }}">
+                            </div>
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                                <label class="form-control-label" for="id_content_en">Contenido en ingles <span class="required">*</span></label>
+                                <div class="summernote" data-plugin="summernote">{{ data.content_en|raw }}</div>
+                                <input type="hidden" name="content_en" id="id_content_en" value="{{ data.content_en|raw }}">
+                            </div>
+
+
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-4">
+                                <div class="example-wrap">
+                                  <h4 class="example-title text-center">Imágen de Portada <span class="required">*</span></h4>
+                                  <div class="example">
+                                    <input type="file" name="portada" data-default-file="../{{data.portada}}" accept="image/*" id="portada" data-height="200" data-plugin="dropify" />
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-xs-12 col-sm-12 col-md-4">
+                                <div class="example-wrap">
+                                  <h4 class="example-title text-center">Logo de proyecto <span class="required">*</span></h4>
+                                  <div class="example">
+                                    <input type="file" name="logo_proyecto" data-default-file="../{{data.logo}}" id="logo_proyecto" accept="image/*" data-height="200" data-plugin="dropify" />
+                                  </div>
+                                </div>
+                            </div>
+
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="exampleTopComponents" role="tabpanel">
+                
+                <table class="table table-hover dataTable table-striped w-full" data-plugin="dataTable">
+                  <thead>
+                    <tr>
+                      <th>N°</th>
+                      <th>Título</th>
+                      <th>Acciones</th> 
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>N°</th>
+                      <th>Título</th>
+                      <th>Acciones</th> 
+                    </tr>
+                  </tfoot>
+                  <tbody>
+
+                    {% for i,g in gallery if 0 < gallery|length %}
+                    <tr id="tr_delete_{{i}}">
+                      <td style="width: 10%;">{{ i + 1 }}</td>
+                      <td><img class="w-200" src="{{ g }}"></td>
+                      
+                      <td style="width: 10%;">
+                        <a onclick="delete_file_in_dir('{{g}}', {{i}})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
+                      </td> 
+                    </tr>
+                    {% endfor %}  
+                  </tbody>
+                </table>
+
+                <div class="row justify-content-md-center">
+                  <form action="api/upload/tmp" enctype="multipart/form-data" class="dropzone dropzone-file-area col-md-12 col-xl-7 text-center" id="my-dropzone" >
+                    <input type="hidden" name="tmp_dir" id="tmp_dir" value="{{ tmp }}" />
+                    <h3 class="sbold" style="color: #646C7F;">Arrastrar las imágenes aquí</h3>
+                  </form>
+                </div>
+               
+              </div>
+            </div>
+
+            <div class="form-group">
+                <button type="button" id="proyectos" class="btn btn-primary">Editar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/theme/global/vendor/summernote/summernote.min.js"></script>
+<script src="views/theme/global/js/Plugin/summernote.js"></script>
+<script src="views/theme/assets/examples/js/forms/editor-summernote.js"></script>
+<script src="views/theme/global/vendor/dropify/dropify.js"></script>
+<script src="views/theme/global/js/Plugin/dropify.js"></script>
+<script src="views/theme/global/vendor/select2/select2.full.min.js"></script>
+<script src="views/app/js/dropzone/dropzone.js" type="text/javascript"></script>
+<script src="views/app/js/file_delete.js"></script>
+<script src="views/theme/global/vendor/datatables/jquery.dataTables.js"></script>
+<script src="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.js"></script>
+<script src="views/theme/global/vendor/datatables-responsive/dataTables.responsive.js"></script>
+<script src="views/theme/global/js/Plugin/datatables.js"></script>
+<script src="views/theme/assets/examples/js/tables/datatable.js"></script>
+<script src="views/app/js/proyectos/editar.js"></script>  
+{% endblock %}

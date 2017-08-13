@@ -1,0 +1,10 @@
+@media (min-width: 320px) and (max-width: 600px) {
+	.rs-dropdown-menu{
+		left: -33px !important;
+	}
+}
+@media (min-width: 568px) and (max-width: 736px) {
+	.rs-dropdown-menu{
+		left: -35px !important;
+	}
+}

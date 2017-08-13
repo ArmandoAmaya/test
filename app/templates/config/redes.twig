@@ -1,0 +1,59 @@
+{% extends 'overall/layout' %}
+
+{% block appBody %}
+
+    <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Redes Sociales</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard/">Escritorio</a></li>
+        <li class="breadcrumb-item active">Redes Sociales</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <div class="panel-body container-fluid">
+          <div class="row row-lg">
+            <div class="col-md-12">
+              <div class="example-wrap">
+                <h4 class="example-title">Configuración - Redes Sociales</h4>
+                <div class="example">
+                  <form autocomplete="off" id="redes_form">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="instagram"> <i class="bd-instagram"></i> Instagram <span class="required">*</span></label>
+                            <input class="form-control" type="text" name="instagram" id="instagram" value="{{ redes.instagram }}" placeholder="https://www.instagram.com/perfil/" />
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="twitter"> <i class="bd-twitter"></i> Twitter <span class="required">*</span></label>
+                            <input class="form-control" type="text" name="twitter" id="twitter" value="{{ redes.twitter }}" placeholder="https://twitter.com/perfil/" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="facebook"> <i class="bd-facebook"></i> Facebook <span class="required">*</span></label>
+                            <input class="form-control" type="text" name="facebook" id="facebook" value="{{ redes.facebook }}" placeholder="https://www.facebook.com/perfil/" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="google"> <i class="bd-google-plus"></i> Google+ <span class="required">*</span></label>
+                            <input class="form-control" type="text" name="google" id="google" value="{{ redes.google }}" placeholder="https://plus.google.com/perfil/" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="button" id="redes" class="btn btn-primary"> Guardar cambios</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
+{% block appFooter %}
+    <script src="views/app/js/redes/redes.js"></script>
+{% endblock %}

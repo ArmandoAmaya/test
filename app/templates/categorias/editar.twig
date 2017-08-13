@@ -1,0 +1,54 @@
+{% extends 'overall/layout' %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Crear categorias</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="categorias/">categorias</a></li>
+        <li class="breadcrumb-item active">Crear</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <div class="panel-body container-fluid">
+          <div class="row row-lg">
+            <div class="col-md-12">
+              <div class="example-wrap">
+                <h4 class="example-title">categorias - Creación</h4>
+                <div class="example">
+                  <form autocomplete="off" id="categorias_form">
+                    <div class="row">
+                      <input type="hidden" name="id_categorias" value="{{ data.id_categorias }}" />
+
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="id_name_es">Nombre en español <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="name_es" id="id_name_es" value="{{ data.name_es }}" placeholder="Name Es" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="id_name_en">Nombre en ingles <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="name_en" id="id_name_en" value="{{ data.name_en }}" placeholder="Name En" />
+                      </div>
+
+                    
+                    </div>
+                    <div class="form-group">
+                      	<button type="button" id="categorias" class="btn btn-primary">Crear</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/app/js/categorias/editar.js"></script>  
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'overall/layout' %}
+
+{% block appHeader %}
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.css">
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-responsive/dataTables.responsive.css">
+<link rel="stylesheet" href="views/theme/assets/examples/css/tables/datatable.css">
+{% endblock %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Administradores</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard/">Escritorio</a></li>
+        <li class="breadcrumb-item active">Ver Todos</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <header class="panel-heading">
+          <div class="panel-actions"></div>
+          <h3 class="panel-title">Administradores - Listado</h3>
+        </header>
+        <div class="panel-body">
+
+          <table class="table table-hover dataTable table-striped w-full" data-plugin="dataTable">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Fecha de registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Fecha de registro</th>
+                <th>Acciones</th>
+              </tr>
+            </tfoot>
+            <tbody>
+              {% for d in data if false != data %}
+                <tr>
+                  <td style="vertical-align:middle;">{{ d.name }}</td>
+                  <td style="vertical-align:middle;"><a href="mailto:{{ d.email }}">{{ d.email }}</a></td>
+                  <td style="vertical-align:middle;">{{ d.fecha_reg|date('d-m-Y') }}</td>
+                  <td class="actions text-center" style="width: 10%!important;vertical-align:middle;">
+                    <a href="admins/editar/{{ d.id_user }}" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
+                    {% if d.id_user != owner_user.id_user %}
+                    <a onclick="deleteModal('admins',{{ d.id_user }})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
+                    {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="col-xs-12 mt-10">
+            <a href="admins/crear" class="btn btn-primary"><i class="wb-plus"></i> Crear Nuevo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/theme/global/vendor/datatables/jquery.dataTables.js"></script>
+<script src="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.js"></script>
+<script src="views/theme/global/vendor/datatables-responsive/dataTables.responsive.js"></script>
+<script src="views/theme/global/js/Plugin/datatables.js"></script>
+<script src="views/theme/assets/examples/js/tables/datatable.js"></script>
+{% endblock %}

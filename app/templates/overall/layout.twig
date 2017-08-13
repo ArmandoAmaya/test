@@ -1,52 +1,166 @@
 <!DOCTYPE html>
-<html lang="es">
-  <head>
-    {# Formato #}
+<html class="no-js css-menubar" lang="es">
+<head>
+	{# Formato #}
     {{ base_assets()|raw }}
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    {# Estilos #}
-    <link href="views/app/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="views/app/css/framework.css" rel="stylesheet" />
-    <link href="views/app/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-
-    {# Título #}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="bootstrap admin template">
+    <meta name="author" content="">
     <title>{{ config.site.name }}</title>
-
-    {# Extras en el header #}
-    {% block appHeader %}
-      <!-- :) -->
-    {% endblock %}
+    <link rel="apple-touch-icon" href="views/app/images/icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="views/app/images/icon.png" />
+    {# Stylesheets #}
+    <link rel="stylesheet" href="views/theme/global/css/bootstrap.min.css">
+    <link rel="stylesheet" href="views/theme/global/css/bootstrap-extend.min.css">
+    <link rel="stylesheet" href="views/theme/assets/css/site.min.css">
+    {# Plugins #}
+    <link rel="stylesheet" href="views/theme/global/vendor/animsition/animsition.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/asscrollable/asScrollable.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/switchery/switchery.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/intro-js/introjs.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/slidepanel/slidePanel.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/jquery-mmenu/jquery-mmenu.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/flag-icon-css/flag-icon.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/jquery-mmenu/jquery-mmenu.css">
+    <link rel="stylesheet" href="views/theme/global/vendor/ladda/ladda.css">
+  	<link rel="stylesheet" href="views/theme/global/vendor/toastr/toastr.css">
+  	<link rel="stylesheet" href="views/theme/assets/examples/css/advanced/toastr.css">
+  	<link rel="stylesheet" href="views/theme/assets/examples/css/uikit/modals.css">
+  	<link rel="stylesheet" href="views/theme/assets/examples/css/forms/layouts.css">
+  	<link rel="stylesheet" href="views/theme/global/vendor/formvalidation/formValidation.css">
+  	<link rel="stylesheet" href="views/theme/global/vendor/bootstrap-sweetalert/sweetalert.css">
+  	{% block appHeader %}
+  	<link rel="stylesheet" href="views/theme/assets/examples/css/dashboard/v1.css">
+  	{% endblock %}
+    {# Fonts #}
+    <link rel="stylesheet" href="views/theme/global/fonts/font-awesome/font-awesome.css">
+  	<link rel="stylesheet" href="views/theme/global/fonts/mfglabs/mfglabs.css">
+  	<link rel="stylesheet" href="views/theme/global/fonts/weather-icons/weather-icons.css">
+    <link rel="stylesheet" href="views/theme/global/fonts/web-icons/web-icons.min.css">
+    <link rel="stylesheet" href="views/theme/global/fonts/brand-icons/brand-icons.min.css">
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic'>
     
+    {# styles #}
+    <link rel="stylesheet" href="views/app/css/app.css">
+        
+    {# Fix mostrando registros... flotando, de datatables #}
+    <style>
+        div.dataTables_wrapper div.dataTables_info {
+            position: static!important;
+        }
+    </style>
+
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <script src="views/theme/global/vendor/html5shiv/html5shiv.min.js"></script>
+      <![endif]-->
+    <!--[if lt IE 10]>
+      <script src="views/theme/global/vendor/media-match/media.match.min.js"></script>
+      <script src="views/theme/global/vendor/respond/respond.min.js"></script>
+      <![endif]-->
+    <!-- Scripts -->
+    <script src="views/theme/global/vendor/breakpoints/breakpoints.js"></script>
+    <script>
+    Breakpoints();
+    </script>
+</head>
+<body class="animsition site-navbar-small {% block bodyClass %}{% endblock %}">
+  <span class="hide" id="frontend" data-val="{{ config.site.frontend }}"></span>
+  <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-  </head>
-  <body>
+    
+    
+	{# Navbar #}
+	{% include 'overall/topnav' %}
 
-    {# Contenido real #}
-    {% block appBody %}
-      <!-- :) -->
-    {% endblock %}
+	{# sidebar #}
+	{% include 'overall/sidebar' %}
 
+
+	{# Contenido real #}
+	{% block appBody %}
+	  <!-- :) -->
+	{% endblock %}
+  
+  	{# Footer #}
+    <footer class="site-footer">
+        <div class="site-footer-legal">© {{"now"|date('Y')}} <a href="{{ config.site.frontend }}" target="_blank">{{ config.site.name }}</a></div>
+        <div class="site-footer-right">
+          Desarrollado con <i class="red-600 wb wb-heart"></i> por <a href="https://devsystemvzla.com.ve/" target="_blank">DevSystemVzla</a>
+        </div>
+    </footer>
+
+    {# Core #}
+    <script src="views/theme/global/vendor/babel-external-helpers/babel-external-helpers.js"></script>
     {# Carga de jQuery #}
     {% if config.framework.debug %}
       {# jQuery para ver errores de ajax vía consola, no eliminar #}
       <script src="views/app/js/jdev.js"></script>
     {% else %}
       {# jQuery para su plantilla, este puede ser modificado a voluntad #}
-      <script src="views/app/vendor/jquery/jquery.min.js"></script>
+      <script src="views/theme/global/vendor/jquery/jquery.js"></script>
     {% endif %}
+    <script src="views/theme/global/vendor/tether/tether.js"></script>
+    <script src="views/theme/global/vendor/bootstrap/bootstrap.js"></script>
+    <script src="views/theme/global/vendor/animsition/animsition.js"></script>
+    <script src="views/theme/global/vendor/mousewheel/jquery.mousewheel.js"></script>
+    <script src="views/theme/global/vendor/asscrollbar/jquery-asScrollbar.js"></script>
+    <script src="views/theme/global/vendor/asscrollable/jquery-asScrollable.js"></script>
+    {# Plugins #}
+    <script src="views/theme/global/vendor/jquery-mmenu/jquery.mmenu.min.all.js"></script>
+    <script src="views/theme/global/vendor/switchery/switchery.min.js"></script>
+    <script src="views/theme/global/vendor/intro-js/intro.js"></script>
+    <script src="views/theme/global/vendor/screenfull/screenfull.js"></script>
+    <script src="views/theme/global/vendor/slidepanel/jquery-slidePanel.js"></script>
+    <script src="views/theme/global/vendor/ladda/spin.min.js"></script>
+  	<script src="views/theme/global/vendor/ladda/ladda.min.js"></script>
+  	<script src="views/theme/global/vendor/formvalidation/formValidation.min.js"></script>
+  	<script src="views/theme/global/vendor/formvalidation/framework/bootstrap4.min.js"></script>
+  	<script src="views/theme/global/vendor/bootstrap-sweetalert/sweetalert.js"></script>
+    {# Scripts #}
+    <script src="views/theme/global/js/State.js"></script>
+    <script src="views/theme/global/js/Component.js"></script>
+    <script src="views/theme/global/js/Plugin.js"></script>
+    <script src="views/theme/global/js/Base.js"></script>
+    <script src="views/theme/global/js/Config.js"></script>
+    <script src="views/theme/assets/js/Section/Menubar.js"></script>
+    <script src="views/theme/assets/js/Section/Sidebar.js"></script>
+    <script src="views/theme/assets/js/Section/PageAside.js"></script>
+    <script src="views/theme/assets/js/Section/GridMenu.js"></script>
+    <script src="views/theme/global/vendor/toastr/toastr.js"></script>
+    {# Config #}
+    <script src="views/theme/global/js/config/colors.js"></script>
+    <script src="views/theme/assets/js/config/tour.js"></script>
+    <script>
+    Config.set('assets', 'views/theme/assets');
+    </script>
+    {# Page #}
+    <script src="views/theme/assets/js/Site.js"></script>
+    <script src="views/theme/global/js/Plugin/asscrollable.js"></script>
+    <script src="views/theme/global/js/Plugin/slidepanel.js"></script>
+    <script src="views/theme/global/js/Plugin/switchery.js"></script>
+    <script src="views/theme/global/js/Plugin/ladda.js"></script>
+  	<script src="views/theme/global/js/Plugin/toastr.js"></script>
+  	<script src="views/theme/global/js/Plugin/bootstrap-sweetalert.js"></script>
+    <script src="views/app/js/delete.js"></script>
+    <script src="views/app/js/jquery.numeric.js"></script>
+    <script>
+    (function(document, window, $) {
+      'use strict';
+      var Site = window.Site;
+      $(document).ready(function() {
+        Site.run();
+      });
+      
+      $('.numeric').numeric();
+    })(document, window, jQuery);
+    </script>
 
-    {# Scripts globales #}
-    <script src="views/app/vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    {# Footer #}
-    {% block appFooter %}
-      <!-- :) -->
-    {% endblock %}
-  </body>
+    {# Scripts extras #}
+	{% block appFooter %}
+	<!-- :) -->
+	{% endblock %}
+</body>
 </html>

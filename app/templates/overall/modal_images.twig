@@ -1,0 +1,42 @@
+<div class="modal fade" id="{{id}}" aria-hidden="true" aria-labelledby="exampleModalTabs" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalTabs">Subir imagen nueva</h4>
+            </div>
+            <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+                <li class="nav-item" role="presentation"><a class="nav-link active" data-toggle="tab" href="#exampleLine1" aria-controls="exampleLine1" role="tab">Subir imagen</a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link" data-toggle="tab" href="#exampleLine2" aria-controls="exampleLine2" role="tab">Recomendaciones</a></li>
+            </ul>
+            <div class="modal-body">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="exampleLine1" role="tabpanel">
+                        <form autocomplete="off" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input type="file" name="{{id_input}}" id="{{id_input}}" data-height="200" data-plugin="dropify" data-default-file="{{default_file}}" />
+                            </div>
+                            <div class="form-group">
+                                <button onclick="{{action}}" class="btn btn-primary" id="{{id_button}}">Subir <i class="wb-upload"></i></button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    <div class="tab-pane" id="exampleLine2" role="tabpanel">
+                        <h5 class="example-title">Instrucciones</h5>
+                        <ul>
+                            <li>El tamaño máximo para cada archivo debe ser de <b>999kb</b>.</li>
+                            <li>Sólamente es permitido la subida de imágenes <b>( JPG, GIF, PNG)</b> cualquier otro archivo subido será omitido.</b></li>
+                            <li>Se recomienda que el tamño de la imagen sea de <b>1000x1000</b></li>
+                            <li>Se recomienda utilizar software de diseño como photoshop para optimizar el peso de las imágenes.</li>
+                            <li>Puede borrar iteractivamente las fotos que suba en caso de no desear que se guarden</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

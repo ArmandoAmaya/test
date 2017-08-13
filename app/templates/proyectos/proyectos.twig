@@ -1,0 +1,86 @@
+{% extends 'overall/layout' %}
+
+{% block appHeader %}
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.css">
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-responsive/dataTables.responsive.css">
+<link rel="stylesheet" href="views/theme/assets/examples/css/tables/datatable.css">
+{% endblock %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">proyectos</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard/">Escritorio</a></li>
+        <li class="breadcrumb-item active">Ver Todos</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <header class="panel-heading">
+          <div class="panel-actions"></div>
+          <h3 class="panel-title">proyectos - Listado</h3>
+        </header>
+        <div class="panel-body">
+
+          <table class="table table-hover dataTable table-striped w-full" data-plugin="dataTable">
+            <thead>
+              <tr>
+              	<th>Título</th>
+              	<th>Descripción corta(es)</th>
+                <th>Descripción corta(en)</th>
+                <th>Categorias</th>
+                <th>Portada</th>
+                <th>Logo</th>
+                <th>Acciones</th> 
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+              	<th>Título</th>
+              	<th>Descripción corta(es)</th>
+                <th>Descripción corta(en)</th>
+                <th>Categorias</th>
+                <th>Portada</th>
+                <th>Logo</th>
+                <th>Acciones</th> 
+              </tr>
+            </tfoot>
+            <tbody>
+              {% for d in data if false != data %}
+              <tr>
+                <td>{{ d.titulo }}</td>
+                <td>{{ d.short_desc_es }}</td>
+                <td>{{ d.short_desc_en }}</td>
+                <td>
+                {% for c in d.categorias %}
+                  <div class="badge badge-outline badge-primary">{{ c.name_es }}</div>
+                {% endfor %}
+                </td>
+                <td><img class="w-50 h-50" src="../{{d.portada}}"></td>
+                <td><img class="w-50 h-50" src="../{{d.logo}}"></td>
+                
+                <td>
+                  <a href="proyectos/editar/{{ d.id_proyectos }}" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
+                  <a onclick="deleteModal('proyectos',{{ d.id_proyectos }})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
+                </td> 
+              </tr>
+              {% endfor %}  
+            </tbody>
+          </table>
+          <div class="col-xs-12 mt-10">
+            <a href="proyectos/crear" class="btn btn-primary"><i class="wb-plus"></i> Crear Nuevo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/theme/global/vendor/datatables/jquery.dataTables.js"></script>
+<script src="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.js"></script>
+<script src="views/theme/global/vendor/datatables-responsive/dataTables.responsive.js"></script>
+<script src="views/theme/global/js/Plugin/datatables.js"></script>
+<script src="views/theme/assets/examples/js/tables/datatable.js"></script>
+{% endblock %}

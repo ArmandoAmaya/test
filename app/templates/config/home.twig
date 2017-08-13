@@ -1,0 +1,75 @@
+{% extends 'overall/layout' %}
+
+{% block appHeader %}
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.css">
+<link rel="stylesheet" href="views/theme/global/vendor/datatables-responsive/dataTables.responsive.css">
+<link rel="stylesheet" href="views/theme/assets/examples/css/tables/datatable.css">
+<link rel="stylesheet" href="views/theme/global/vendor/dropify/dropify.css">
+
+{% endblock %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Homepage</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard/">Escritorio</a></li>
+        <li class="breadcrumb-item active">Imágenes</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <header class="panel-heading">
+          <div class="panel-actions"></div>
+          <h3 class="panel-title">Configuración - Imágenes</h3>
+        </header>
+        <div class="panel-body">
+
+          <table class="table table-hover dataTable table-striped w-full" data-plugin="dataTable">
+            <thead>
+              <tr>
+              	<th>Imagen del slider</th>
+                <th>Acciones</th> 
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+              	<th>Imagen del slider</th>
+                <th>Acciones</th> 
+              </tr>
+            </tfoot>
+            <tbody>
+              {% for s in sliders %}
+              <tr>
+                <td><img class="w-200" src="../{{s.file}}"></td>
+                <td style="width:10%!important;">
+                    <a href="" data-target="#edit_slider_{{s.id_home_slider}}" data-toggle="modal" class="btn btn-sm btn-icon btn-pure btn-success on-default edit-row" data-toggle="tooltip" data-original-title="Editar"><i class="icon wb-edit" aria-hidden="true"></i></a>
+                    <a onclick="delete_slider('{{s.file}}', {{s.id_home_slider}})" class="pointer btn btn-sm btn-icon btn-pure btn-danger on-default remove-row" data-toggle="tooltip" data-original-title="Eliminar"><i class="icon wb-trash" aria-hidden="true"></i></a>
+                </td> 
+              </tr>
+              {% include 'overall/modal_images' with {'id':'edit_slider_' ~ s.id_home_slider,'default_file': '../' ~ s.file, 'action': 'edit_slider(event,' ~ s.id_home_slider ~ ')', 'id_button': 'upload_home_'~s.id_home_slider, 'id_input': 'slider_'~s.id_home_slider} only %}
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="col-xs-12 mt-10">
+            <a href="" data-target="#add_slider" data-toggle="modal" class="btn btn-primary btn-outline"><i class="wb-plus"></i> Añadir nuevo</a>
+          </div>
+        </div>
+      </div>
+    
+      {% include 'overall/modal_images' with {'id':'add_slider','default_file': '', 'action': 'add_slider()', 'id_button': 'upload_home', 'id_input': 'slider'} only %}
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/theme/global/vendor/datatables/jquery.dataTables.js"></script>
+<script src="views/theme/global/vendor/datatables-bootstrap/dataTables.bootstrap.js"></script>
+<script src="views/theme/global/vendor/datatables-responsive/dataTables.responsive.js"></script>
+<script src="views/theme/global/js/Plugin/datatables.js"></script>
+<script src="views/theme/assets/examples/js/tables/datatable.js"></script>
+<script src="views/theme/global/vendor/dropify/dropify.js"></script>
+<script src="views/theme/global/js/Plugin/dropify.js"></script>
+<script src="views/app/js/home/home.js"></script>
+{% endblock %}

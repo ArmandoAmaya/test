@@ -148,6 +148,25 @@ abstract class Models  {
     }
 
     /**
+      * Trae los datos en forma [id => valor]
+      *
+      * @param PDOStatement $query: Consulta 
+      * @param string $entidad: Nombre de la entidad 
+      * @param string $campo: Campo para comprar existencia
+      *
+      * @return array con los datos de una entidad
+    */
+    protected function select_array($query, string $entidad, string $campo = '') {
+        $a = array();
+        foreach ($query as $q) {
+          $a[$q[$entidad]] = array_key_exists($campo, $q) ? $q[$campo] : $q; 
+        }
+
+        return $a;
+
+    }
+
+    /**
       * Finaliza la conexión con la base de datos.
     */
     protected function __destruct() {

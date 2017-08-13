@@ -1,0 +1,122 @@
+{% extends 'overall/layout' %}
+
+{% block appBody %}
+  <div class="page">
+    <div class="page-header">
+      <h1 class="page-title">Página de contacto</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard/">Escritorio</a></li>
+        <li class="breadcrumb-item active">Configuración</li>
+      </ol>
+    </div>
+    <div class="page-content">
+      <div class="panel">
+        <div class="panel-body container-fluid">
+          <div class="row row-lg">
+            <div class="col-md-12">
+              <div class="example-wrap">
+                <h4 class="example-title">Configuración - Página de contacto</h4>
+                <div class="example">
+                  <form autocomplete="off" id="contact_form">
+                    <div class="row">
+                      
+                      <h5 class="example-title col-md-12">Configuración General</h5>
+                      <div class="form-group col-xs-12 col-md-4">
+                          <label class="form-control-label" for="email_general">Email general <span class="required">*</span></label>
+                          <input class="form-control" type="email" name="email_general" id="email_general" value="{{contact.email_general}}" placeholder="Correo general de la página" />
+                          <span class="text-info"><i class="wb-info-circle"></i> <strong>Este correo general es en el cual se recibirán los mensajes enviados mediante el formulario de contacto.</strong></span>
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-4">
+                          <label class="form-control-label" for="lat">Latitud Google Maps <span class="required">*</span></label>
+                          <input class="form-control numeric" type="text" name="lat" id="lat" value="{{contact.latitud}}" placeholder="Latitud de Google Maps" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-4">
+                          <label class="form-control-label" for="lng">Longitud Google Maps <span class="required">*</span></label>
+                          <input class="form-control numeric" type="text" name="lng" id="lng" value="{{contact.longitud}}" placeholder="Longitud de Google Maps" />
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      
+                      <h5 class="example-title col-md-12">Contactanos</h5>
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="dir_es"> <i class="fa fa-map-marker"></i> Dirección - Español <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="dir_es" id="dir_es" value="{{contact.address.es}}" placeholder="Dirección en español" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="dir_en"> <i class="fa fa-map-marker"></i> Dirección - ingles <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="dir_en" id="dir_en" value="{{contact.address.en}}" placeholder="Dirección en ingles" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="como_es"> <i class="fa fa-location-arrow"></i> Como llegar - Español <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="como_es" id="como_es" value="{{contact.como.es}}" placeholder="Como llegar en español" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="como_en"> <i class="fa fa-location-arrow"></i> Como llegar - ingles <span class="required">*</span></label>
+                          <input class="form-control" type="text" name="como_en" id="como_en" value="{{contact.como.en}}" placeholder="Como llegar en ingles" />
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="phone_1"> <i class="fa fa-mobile"></i> Teléfono 1 <span class="required">*</span></label>
+                          <input class="form-control numeric" type="tel" name="phone_1" id="phone_1" value="{{contact.phone_1}}" placeholder="Número de teléfono 1" />
+                      </div>
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="phone_2"> <i class="fa fa-mobile"></i> Teléfono 2 <span class="required">*</span></label>
+                          <input class="form-control numeric" type="tel" name="phone_2" id="phone_2" value="{{contact.phone_2}}" placeholder="Número de teléfono 2" />
+                      </div>
+                    </div>
+
+                    <div class="form-group mb-0">
+                      <label class="form-control-label"> <i class="fa fa-envelope-o"></i> Correos electrónicos <span class="required">*</span></label>
+                    </div>
+                    <div class="row" id="emails">
+                      {% for e in contact.emails %}
+                      <div class="form-group col-xs-12 col-md-4 col-xl-3">
+                          <input class="form-control" type="tel" name="emails[]" id="emails" value="{{e}}" placeholder="Correo@ejemplo.com" />
+                      </div>
+                      {% endfor %}
+                      
+                    </div>
+                    <div class="form-group" id="emails_control">
+                        <a href="javascript:void(0)" class="d-inline-block" onclick="add_email(event)"> <span class="fa fa-plus"></span> Agregar Nuevo</a>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      
+                      <h5 class="example-title col-md-12">Trabaja con nosotros</h5>
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="desc_es">Descripción - español <span class="required">*</span></label>
+                          <textarea class="form-control" id="desc_es" name="desc_es" placeholder="Contenido en español">{{contact.work.es}}</textarea>
+                      </div>
+
+                      <div class="form-group col-xs-12 col-md-6">
+                          <label class="form-control-label" for="desc_en">Descripción - ingles <span class="required">*</span></label>
+                          <textarea class="form-control" id="desc_en" name="desc_en" placeholder="Contenido en ingles">{{contact.work.en}}</textarea>
+                      </div>
+                      
+                    </div>
+
+                    <div class="form-group">
+                      	<button type="button" id="contact" class="btn btn-primary"> Guardar cambios</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block appFooter %}
+<script src="views/app/js/contact/add_email.js"></script>  
+<script src="views/app/js/contact/contact.js"></script>  
+{% endblock %}

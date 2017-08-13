@@ -42,7 +42,7 @@ final class Router implements RouterInterface {
       * @var array 
     */
     private $routerCollection = array(
-        '/controller' => 'home', # controlador por defecto
+        '/controller' => 'dashboard', # controlador por defecto
         '/method' => null, # método por defecto
         '/id' => null # id por defecto
     );
